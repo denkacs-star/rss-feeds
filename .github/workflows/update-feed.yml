@@ -1,0 +1,126 @@
+name: Update Carnegie RSS Feed
+on:
+  schedule:
+    - cron: '0 */4 * * *'  # Alle 4 Stunden
+  workflow_dispatch:        # Manuell auslösbar
+  push:
+    branches: [ main ]
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.CARREGIE_FEED_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 feedgen pytz
+
+    - name: Generate RSS feed
+      run: |
+        cat > generate_feed.py << 'EOF'
+        import requests
+        from bs4 import BeautifulSoup
+        from feedgen.feed import FeedGenerator
+        from datetime import datetime
+        import pytz
+        
+        def generate_carnegie_rss():
+            url = "https://carnegieendowment.org/russia-eurasia/politika?lang=ru&center=russia-eurasia"
+            headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+            
+            try:
+                response = requests.get(url, headers=headers, timeout=15)
+                response.raise_for_status()
+            except Exception as e:
+                print(f"Error: {e}")
+                return False
+            
+            soup = BeautifulSoup(response.content, 'html.parser')
+            fg = FeedGenerator()
+            fg.title('Carnegie Russia-Eurasia - Politika')
+            fg.description('Аналитика и публикации Carnegie Russia-Eurasia')
+            fg.link(href=url, rel='alternate')
+            fg.language('ru')
+            
+            # Artikel finden
+            articles = []
+            anchors = soup.find_all('a', href=lambda x: x and '/politika/' in x)
+            
+            for anchor in anchors:
+                try:
+                    href = anchor['href']
+                    if not href.startswith('http'):
+                        href = 'https://carnegieendowment.org' + href
+                    
+                    # Titel finden
+                    h5_div = anchor.find('div', class_='h5')
+                    if h5_div:
+                        title = h5_div.get_text().strip()
+                        if title and len(title) > 20:
+                            articles.append((title, href))
+                except:
+                    continue
+            
+            # Eindeutige Artikel
+            unique_articles = {}
+            for title, href in articles:
+                unique_articles[href] = title
+            
+            # Feed-Einträge erstellen
+            for href, title in list(unique_articles.items())[:15]:
+                fe = fg.add_entry()
+                fe.title(title)
+                fe.link(href=href)
+                fe.description(title)
+                fe.pubDate(datetime.now(pytz.utc))
+            
+            # Feed speichern
+            fg.rss_file('carnegie_feed.xml', pretty=True)
+            return True
+        
+        generate_carnegie_rss()
+        EOF
+        
+        python generate_feed.py
+
+    - name: Update index.html
+      run: |
+        current_date=$(date -u +"%Y-%m-%d %H:%M UTC")
+        cat > index.html << EOF
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>My RSS Feeds</title>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body>
+            <h1>📰 My RSS Feeds</h1>
+            <p>Available feeds:</p>
+            <ul>
+                <li><a href="carnegie_feed.xml">Carnegie Russia-Eurasia Feed</a></li>
+            </ul>
+            <p><em>Last updated: $current_date</em></p>
+            <p><small>Auto-updated via GitHub Actions</small></p>
+        </body>
+        </html>
+        EOF
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add carnegie_feed.xml index.html
+        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
+        git push

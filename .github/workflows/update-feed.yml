@@ -13,8 +13,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.PAT_TOKEN }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -27,21 +25,70 @@ jobs:
     - name: Generate RSS feed
       run: |
         python -c "
-        # Deinen generierten Python-Code hier einfügen
-        print('Feed wird generiert...')
+        # Deinen Python-Code hier einfügen
+        import requests
+        from bs4 import BeautifulSoup
+        from feedgen.feed import FeedGenerator
+        from datetime import datetime
+        import pytz
+        
+        url = 'https://carnegieendowment.org/russia-eurasia/politika?lang=ru&center=russia-eurasia'
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        
+        response = requests.get(url, headers=headers, timeout=15)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        fg = FeedGenerator()
+        fg.title('Carnegie Russia-Eurasia - Politika')
+        fg.description('Аналитика Carnegie Russia-Eurasia')
+        fg.link(href=url, rel='alternate')
+        fg.language('ru')
+        
+        articles = []
+        for anchor in soup.find_all('a', href=lambda x: x and '/politika/' in x):
+            try:
+                href = anchor['href']
+                if not href.startswith('http'):
+                    href = 'https://carnegieendowment.org' + href
+                
+                h5_div = anchor.find('div', class_='h5')
+                if h5_div:
+                    title = h5_div.get_text().strip()
+                    if len(title) > 20:
+                        articles.append((title, href))
+            except:
+                continue
+        
+        unique_articles = {}
+        for title, href in articles:
+            unique_articles[href] = title
+        
+        for href, title in list(unique_articles.items())[:15]:
+            fe = fg.add_entry()
+            fe.title(title)
+            fe.link(href=href)
+            fe.description(title)
+            fe.pubDate(datetime.now(pytz.utc))
+        
+        fg.rss_file('carnegie_feed.xml', pretty=True)
+        print('✅ Feed generated successfully')
         "
 
     - name: Update index.html
       run: |
-        current_date=$(date -u +\"%Y-%m-%d %H:%M UTC\")
-        cat > index.html << EOF
+        current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
+        cat > index.html << 'EOF'
         <!DOCTYPE html>
         <html>
-        <head><title>RSS Feeds</title><meta charset=\"utf-8\"></head>
+        <head>
+            <title>RSS Feeds</title>
+            <meta charset="utf-8">
+        </head>
         <body>
-          <h1>📰 My RSS Feeds</h1>
-          <ul><li><a href=\"carnegie_feed.xml\">Carnegie Russia-Eurasia</a></li></ul>
-          <p>Updated: \$current_date</p>
+            <h1>📰 My RSS Feeds</h1>
+            <ul>
+                <li><a href="carnegie_feed.xml">Carnegie Russia-Eurasia</a></li>
+            </ul>
+            <p>Updated: $current_date</p>
         </body>
         </html>
         EOF
@@ -51,14 +98,14 @@ jobs:
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         
-        # Zuerst pullen um auf dem neuesten Stand zu sein
+        # Pull changes first
         git pull origin main --rebase --autostash || true
         
-        # Dateien hinzufügen
+        # Add files
         git add carnegie_feed.xml index.html
         
-        # Commit erstellen
-        git commit -m \"Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')\" || echo \"No changes to commit\"
+        # Commit
+        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
         
-        # Push durchführen
+        # Push
         git push origin main

@@ -20,7 +20,6 @@ def parse_russian_date(date_text):
     }
     
     try:
-        # Format: "23 января 2026 г."
         match = re.search(r'(\d+)\s+(\w+)\s+(\d{4})', date_text)
         if match:
             day = int(match.group(1))
@@ -57,55 +56,60 @@ def scrape_carnegie():
             
             print(f"✅ {len(article_elements)} Artikel gefunden")
             
-            for idx, article_elem in enumerate(article_elements[:20]):  # Max 20 Artikel
+            for idx, article_elem in enumerate(article_elements[:20]):
                 try:
-                    # Link extrahieren (das <a> Element innerhalb des <article>)
-                    link_elem = article_elem.query_selector('a[href*="/politika/"]')
-                    if not link_elem:
+                    # Finde alle Links im Artikel
+                    all_links = article_elem.query_selector_all('a')
+                    
+                    # Der zweite Link (Index 1) ist normalerweise der Artikel-Link
+                    # Der erste ist der "CARNEGIE POLITIKA" Badge
+                    article_link = None
+                    for link in all_links:
+                        href = link.get_attribute('href')
+                        if href and '/politika/202' in href and 'carnegieendowment.org' not in link.inner_text():
+                            article_link = link
+                            break
+                    
+                    if not article_link:
                         continue
                     
-                    link = link_elem.get_attribute('href')
+                    # Link extrahieren
+                    link = article_link.get_attribute('href')
                     if link and not link.startswith('http'):
                         link = f"https://carnegieendowment.org{link}"
                     
-                    # Titel extrahieren (generic Element mit dem Titel-Text)
-                    title_elem = article_elem.query_selector('generic, h1, h2, h3, [role="heading"]')
-                    if not title_elem:
-                        continue
-                    title = title_elem.inner_text().strip()
+                    # Titel ist der Text des Artikel-Links
+                    title = article_link.inner_text().strip()
                     
-                    # Überspringen wenn der Titel "Комментарий" oder "Подкаст" ist (das sind Labels)
-                    if title in ['Комментарий', 'Подкаст', 'Carnegie Politika']:
-                        # Versuche den nächsten generic zu finden
-                        all_generics = article_elem.query_selector_all('generic')
-                        for gen in all_generics:
-                            text = gen.inner_text().strip()
-                            if len(text) > 20 and text not in ['Комментарий', 'Подкаст', 'Carnegie Politika']:
-                                title = text
+                    if not title or len(title) < 10:
+                        continue
+                    
+                    # Gesamten Artikel-Text holen und parsen
+                    full_text = article_elem.inner_text()
+                    lines = [line.strip() for line in full_text.split('\n') if line.strip()]
+                    
+                    # Beschreibung ist normalerweise die Zeile nach dem Titel
+                    description = title  # Fallback
+                    for i, line in enumerate(lines):
+                        if title in line and i + 1 < len(lines):
+                            next_line = lines[i + 1]
+                            if len(next_line) > 30 and 'CARNEGIE' not in next_line and 'КОММЕНТАРИЙ' not in next_line:
+                                description = next_line
                                 break
                     
-                    # Beschreibung extrahieren (das zweite generic Element)
-                    desc_elements = article_elem.query_selector_all('generic')
-                    description = title  # Fallback
-                    for desc_elem in desc_elements:
-                        text = desc_elem.inner_text().strip()
-                        if len(text) > 50 and text != title:
-                            description = text[:500]
-                            break
-                    
-                    # Datum extrahieren (listitem mit Datum)
-                    date_elem = article_elem.query_selector('listitem[class*=""], list listitem:last-child')
+                    # Datum suchen (Format: "23 января 2026 г.")
                     pub_date = datetime.now(pytz.UTC)
-                    
-                    if date_elem:
-                        date_text = date_elem.inner_text().strip()
-                        if 'г.' in date_text or '202' in date_text:
-                            pub_date = parse_russian_date(date_text)
+                    for line in lines:
+                        if 'января' in line or 'февраля' in line or 'марта' in line or 'апреля' in line or \
+                           'мая' in line or 'июня' in line or 'июля' in line or 'августа' in line or \
+                           'сентября' in line or 'октября' in line or 'ноября' in line or 'декабря' in line:
+                            pub_date = parse_russian_date(line)
+                            break
                     
                     article = {
                         'title': title,
                         'link': link,
-                        'description': description,
+                        'description': description[:500],
                         'pubDate': pub_date
                     }
                     

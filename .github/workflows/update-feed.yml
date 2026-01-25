@@ -1,14 +1,12 @@
----
 name: Update Carnegie RSS Feed
 on:
   schedule:
     - cron: '0 */4 * * *'
   workflow_dispatch:
-
 jobs:
   update-feed:
     runs-on: ubuntu-latest
-    
+   
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -18,228 +16,148 @@ jobs:
       with:
         python-version: '3.11'
 
+    - name: Install Chrome
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip fontconfig libcurl4 libnss3 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libasound2 xvfb
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+
     - name: Install dependencies
-      run: pip install requests beautifulsoup4 feedgen
+      run: pip install requests beautifulsoup4 feedgen selenium webdriver-manager
 
     - name: Generate RSS feed from actual structure
       run: |
         python3 -c "
-import requests
-from bs4 import BeautifulSoup
-from feedgen.feed import FeedGenerator
-from datetime import datetime
-import pytz
-import re
+        import requests
+        from bs4 import BeautifulSoup
+        from feedgen.feed import FeedGenerator
+        from datetime import datetime
+        import pytz
+        import re
+        from selenium import webdriver
+        from selenium.webdriver.chrome.service import Service as ChromeService
+        from selenium.webdriver.chrome.options import Options
+        from webdriver_manager.chrome import ChromeDriverManager
 
-# Carnegie Politika Seite
-BASE_URL = 'https://carnegieendowment.org/ru/russia-eurasia/politika'
+        # Carnegie Politika Seite
+        BASE_URL = 'https://carnegieendowment.org/ru/russia-eurasia/politika'
+        print('🔍 Lade Carnegie Seite mit Selenium:', BASE_URL)
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
-}
-
-print('🔍 Lade Carnegie Seite:', BASE_URL)
-
-try:
-    response = requests.get(BASE_URL, headers=headers, timeout=30)
-    print(f'📊 Status: {response.status_code}, Größe: {len(response.content)} bytes')
-    
-    if response.status_code != 200:
-        print('⚠️  Seite nicht erreichbar, verwende Fallback')
-        raise Exception('Page not accessible')
-        
-    soup = BeautifulSoup(response.content, 'html.parser')
-    
-    # RSS Feed erstellen
-    fg = FeedGenerator()
-    fg.title('Carnegie Россия-Евразия - Политика')
-    fg.description('Политические анализы Carnegie Россия-Евразия')
-    fg.link(href=BASE_URL, rel='alternate')
-    fg.language('ru')
-    
-    articles_found = []
-    
-    # METHODE 1: Suche nach SPAN mit Text-Klassen (basierend auf Ihrem Beispiel)
-    print('🔍 Methode 1: Suche nach Text-Spans...')
-    
-    # Suche nach spans mit typischen Titel-Klassen
-    title_spans = soup.find_all('span', class_=lambda x: x and any(
-        word in str(x).lower() for word in ['text', 'headline', 'title', 'h5', 'head']
-    ))
-    
-    for span in title_spans:
         try:
-            # Text aus dem Span extrahieren
-            title = span.get_text(strip=True)
+            # Selenium setup
+            options = Options()
+            options.add_argument('--headless=new')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+            driver.get(BASE_URL)
+            html = driver.page_source
+            driver.quit()
+            print(f'📊 HTML-Größe: {len(html)} bytes')
+
+            soup = BeautifulSoup(html, 'html.parser')
+
+            # RSS Feed erstellen
+            fg = FeedGenerator()
+            fg.title('Carnegie Россия-Евразия - Политика')
+            fg.description('Политические анализы Carnegie Россия-Евразия')
+            fg.link(href=BASE_URL, rel='alternate')
+            fg.language('ru')
+
+            articles_found = []
+
+            # METHODE 1: Suche nach SPAN mit Text-Klassen (angepasst auf dein Beispiel)
+            print('🔍 Methode 1: Suche nach Text-Spans...')
+            title_spans = soup.find_all('span', class_=lambda x: x and ('headlineh5' in str(x).lower() or 'text' in str(x).lower() or 'head' in str(x).lower()))
             
-            if len(title) > 20:  # Muss ausreichend lang sein
-                # Finde den parent link
-                link = span.find_parent('a')
-                if link and link.get('href'):
-                    href = link['href']
-                    
-                    # URL vervollständigen
-                    if href.startswith('/'):
-                        href = 'https://carnegieendowment.org' + href
-                    
-                    # Nur Politika-Artikel
-                    if '/politika/' in href and href not in [a[1] for a in articles_found]:
-                        articles_found.append((title, href))
-                        print(f'   ✅ Via Span gefunden: \"{title[:60]}...\"')
-                        
-        except Exception as e:
-            continue
-    
-    # METHODE 2: Suche nach DIV mit Heading-Klassen
-    if len(articles_found) < 3:
-        print('🔍 Methode 2: Suche nach Heading-Divs...')
-        
-        # Suche nach divs mit Heading-Klassen
-        heading_divs = soup.find_all('div', class_=lambda x: x and any(
-            word in str(x).lower() for word in ['heading', 'h5', 'headline', 'title']
-        ))
-        
-        for div in heading_divs:
-            try:
-                # Text aus div extrahieren
-                title = div.get_text(strip=True)
-                
-                if len(title) > 20:
-                    # Finde link
-                    link = div.find_parent('a')
-                    if not link:
-                        # Suche nach a Tag in der Nähe
-                        link = div.find_next('a')
-                    
-                    if link and link.get('href'):
-                        href = link['href']
-                        
+            for span in title_spans:
+                try:
+                    title = span.get_text(strip=True)
+                    if len(title) > 20:
+                        link = span.find_parent('a')
+                        if link and link.get('href'):
+                            href = link['href']
+                            if href.startswith('/'):
+                                href = 'https://carnegieendowment.org' + href
+                            if '/politika/' in href and href not in [a[1] for a in articles_found]:
+                                articles_found.append((title, href))
+                                print(f' ✅ Via Span gefunden: \"{title[:60]}...\"')
+                except Exception as e:
+                    continue
+
+            # METHODE 2: Suche nach DIV mit Heading-Klassen
+            if len(articles_found) < 3:
+                print('🔍 Methode 2: Suche nach Heading-Divs...')
+                heading_divs = soup.find_all('div', class_=lambda x: x and any(word in str(x).lower() for word in ['heading', 'h5', 'headline', 'title']))
+                for div in heading_divs:
+                    try:
+                        title = div.get_text(strip=True)
+                        if len(title) > 20:
+                            link = div.find_parent('a') or div.find_next('a')
+                            if link and link.get('href'):
+                                href = link['href']
+                                if href.startswith('/'):
+                                    href = 'https://carnegieendowment.org' + href
+                                if '/politika/' in href and href not in [a[1] for a in articles_found]:
+                                    articles_found.append((title, href))
+                                    print(f' ✅ Via Div gefunden: \"{title[:60]}...\"')
+                    except Exception as e:
+                        continue
+
+            # METHODE 3: Einfache Suche nach allen Links mit langem Text (strenger Filter für aktuelle Artikel)
+            if len(articles_found) < 3:
+                print('🔍 Methode 3: Einfache Link-Suche...')
+                all_links = soup.find_all('a', href=True)
+                for link in all_links:
+                    href = link.get('href', '')
+                    text = link.get_text(strip=True)
+                    if '/ru/russia-eurasia/politika/20' in href and 30 < len(text) < 150:  # Filter auf Jahr (z.B. 20xx)
                         if href.startswith('/'):
                             href = 'https://carnegieendowment.org' + href
-                        
-                        if '/politika/' in href and href not in [a[1] for a in articles_found]:
-                            articles_found.append((title, href))
-                            print(f'   ✅ Via Div gefunden: \"{title[:60]}...\"')
-                            
-            except Exception as e:
-                continue
-    
-    # METHODE 3: Einfache Suche nach allen Links mit langem Text
-    if len(articles_found) < 3:
-        print('🔍 Methode 3: Einfache Link-Suche...')
-        
-        all_links = soup.find_all('a', href=True)
-        
-        for link in all_links:
-            href = link.get('href', '')
-            text = link.get_text(strip=True)
-            
-            # Filter für interessante Links
-            if '/ru/russia-eurasia/politika/' in href and 30 < len(text) < 150:
-                if href.startswith('/'):
-                    href = 'https://carnegieendowment.org' + href
-                
-                if href not in [a[1] for a in articles_found]:
-                    articles_found.append((text, href))
-                    print(f'   ✅ Einfacher Fund: \"{text[:60]}...\"')
-    
-    # FALLBACK: Wenn nichts gefunden wurde
-    if len(articles_found) == 0:
-        print('⚠️  Keine Artikel gefunden, verwende Fallback...')
-        
-        # Ihre Beispiel-Artikel
-        fallback_articles = [
-            ('Тающее равновесие. Насколько Китай и Россия действительно интересуются Гренландией', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-interest'),
-            ('Китай как глобальный поставщик безопасности', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider'),
-            ('Россия в потерянном глобальном хаосе', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos'),
-            ('Гренландия в центре внимания России и Китая', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat')
-        ]
-        
-        for title, href in fallback_articles:
-            articles_found.append((title, href))
-            print(f'   📝 Fallback: \"{title[:60]}...\"')
-    
-    # Duplikate entfernen
-    unique_articles = {}
-    for title, href in articles_found:
-        if href not in unique_articles:
-            unique_articles[href] = title
-    
-    print(f'📊 Insgesamt gefunden: {len(unique_articles)} Artikel')
-    
-    # Artikel zum Feed hinzufügen
-    feed_count = 0
-    for href, title in list(unique_articles.items())[:10]:
-        try:
-            fe = fg.add_entry()
-            fe.title(title)
-            fe.link(href=href)
-            fe.description(f'Анализ Carnegie: {title}')
-            
-            # Datum aus URL extrahieren oder aktuelles Datum verwenden
-            date_match = re.search(r'/(\d{4})/(\d{2})/', href)
-            if date_match:
-                year = int(date_match.group(1))
-                month = int(date_match.group(2))
-                pub_date = datetime(year, month, 15, tzinfo=pytz.utc)
-            else:
-                pub_date = datetime.now(pytz.utc)
-            
-            fe.pubDate(pub_date)
-            feed_count += 1
-            print(f'   ➕ Zum Feed hinzugefügt ({feed_count}): {title[:60]}...')
-            
-        except Exception as e:
-            print(f'   ❌ Fehler: {e}')
-            continue
-    
-    # Feed speichern
-    fg.rss_file('carnegie_feed.xml', pretty=True)
-    
-    print('=' * 60)
-    print(f'🎉 FEED ERSTELLT: {feed_count} Artikel im RSS Feed')
-    print('=' * 60)
-    
-    # Zeige Feed-Inhalt
-    if feed_count > 0:
-        print('📋 Artikel im Feed:')
-        for i, (href, title) in enumerate(list(unique_articles.items())[:feed_count]):
-            print(f'   {i+1}. {title}')
-    else:
-        print('⚠️  WARNUNG: Feed ist leer!')
+                        if href not in [a[1] for a in articles_found]:
+                            articles_found.append((text, href))
+                            print(f' ✅ Einfacher Fund: \"{text[:60]}...\"')
 
-except Exception as e:
-    print(f'❌ Kritischer Fehler: {e}')
-    
-    # Minimaler Fallback-Feed
-    import xml.etree.ElementTree as ET
-    
-    root = ET.Element('rss', version='2.0')
-    channel = ET.SubElement(root, 'channel')
-    
-    ET.SubElement(channel, 'title').text = 'Carnegie Россия-Евразия'
-    ET.SubElement(channel, 'link').text = BASE_URL
-    ET.SubElement(channel, 'description').text = 'Аналитика Carnegie'
-    ET.SubElement(channel, 'language').text = 'ru'
-    
-    # Fallback-Artikel
-    fallback = [
-        ('Тающее равновесие', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-interest'),
-        ('Китай и безопасность', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-security')
-    ]
-    
-    for title, href in fallback:
-        item = ET.SubElement(channel, 'item')
-        ET.SubElement(item, 'title').text = title
-        ET.SubElement(item, 'link').text = href
-        ET.SubElement(item, 'description').text = f'Анализ: {title}'
-    
-    # Speichern
-    tree = ET.ElementTree(root)
-    tree.write('carnegie_feed.xml', encoding='utf-8', xml_declaration=True)
-    print('🔄 Fallback-XML erstellt')
+            # Duplikate entfernen
+            unique_articles = {href: title for title, href in articles_found if href not in unique_articles}
+
+            print(f'📊 Insgesamt gefunden: {len(unique_articles)} Artikel')
+
+            # Artikel zum Feed hinzufügen
+            feed_count = 0
+            for href, title in list(unique_articles.items())[:10]:
+                try:
+                    fe = fg.add_entry()
+                    fe.title(title)
+                    fe.link(href=href)
+                    fe.description(f'Анализ Carnegie: {title}')
+                    date_match = re.search(r'/(\d{4})/(\d{2})/', href)
+                    pub_date = datetime(int(date_match.group(1)), int(date_match.group(2)), 15, tzinfo=pytz.utc) if date_match else datetime.now(pytz.utc)
+                    fe.pubDate(pub_date)
+                    feed_count += 1
+                    print(f' ➕ Zum Feed hinzugefügt ({feed_count}): {title[:60]}...')
+                except Exception as e:
+                    print(f' ❌ Fehler: {e}')
+                    continue
+
+            # Feed speichern
+            fg.rss_file('carnegie_feed.xml', pretty=True)
+
+            print('=' * 60)
+            print(f'🎉 FEED ERSTELLT: {feed_count} Artikel im RSS Feed')
+            print('=' * 60)
+
+            if feed_count > 0:
+                print('📋 Artikel im Feed:')
+                for i, (href, title) in enumerate(list(unique_articles.items())[:feed_count], 1):
+                    print(f' {i}. {title}')
+            else:
+                print('⚠️ WARNUNG: Feed ist leer!')
+
+        except Exception as e:
+            print(f'❌ Kritischer Fehler: {e}')
         "
 
     - name: Validate and push
@@ -251,7 +169,7 @@ except Exception as e:
           echo "XML has errors"
           exit 1
         fi
-        
+       
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add carnegie_feed.xml

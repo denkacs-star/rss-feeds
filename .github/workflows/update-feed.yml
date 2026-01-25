@@ -16,16 +16,19 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install Chrome
+    - name: Install Chrome and Chromedriver
       run: |
+        # Chrome installieren
+        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+        echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
         sudo apt-get update
-        sudo apt-get install -y wget unzip fontconfig libcurl4 libnss3 libatk-bridge2.0-0 libgtk-3-0 libgbm1 libasound2 xvfb
-        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -f install -y
+        sudo apt-get install -y google-chrome-stable fonts-liberation libappindicator3-1 libasound2 libatk-bridge2.0-0 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 lsb-release wget xdg-utils
 
+        # Chromedriver via webdriver-manager im Python-Schritt installieren lassen – KEIN manuelles Download nötig
+   
     - name: Install dependencies
       run: pip install requests beautifulsoup4 feedgen selenium webdriver-manager
-
+    
     - name: Generate RSS feed from actual structure
       run: |
         python3 -c "

@@ -1,134 +1,158 @@
-- name: Generate RSS feed
-  run: |
-    python -c "
-    import requests
-    from bs4 import BeautifulSoup
-    from feedgen.feed import FeedGenerator
-    from datetime import datetime
-    import pytz
-    import re
+name: Update Carnegie RSS Feed
+on:
+  schedule:
+    - cron: '0 */4 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-feed:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
-    url = 'https://carnegieendowment.org/russia-eurasia/politika?lang=ru&center=russia-eurasia'
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
-    }
-    
-    try:
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.PAT_TOKEN }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: pip install requests beautifulsoup4 feedgen pytz
+
+    - name: Generate RSS feed
+      run: |
+        python -c "
+        import requests
+        from bs4 import BeautifulSoup
+        from feedgen.feed import FeedGenerator
+        from datetime import datetime
+        import pytz
+        
+        url = 'https://carnegieendowment.org/russia-eurasia/politika?lang=ru&center=russia-eurasia'
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
+        }
+        
         print('📡 Lade Carnegie Seite...')
         response = requests.get(url, headers=headers, timeout=20)
         response.raise_for_status()
         print('✅ Seite geladen')
-    except Exception as e:
-        print(f'❌ Fehler beim Laden: {e}')
-        exit(1)
-    
-    soup = BeautifulSoup(response.content, 'html.parser')
-    
-    # DEBUG: Seite speichern zur Analyse
-    with open('debug_page.html', 'w', encoding='utf-8') as f:
-        f.write(soup.prettify())
-    print('📄 Debug-HTML gespeichert')
-    
-    # RSS-Feed konfigurieren
-    fg = FeedGenerator()
-    fg.title('Carnegie Russia-Eurasia - Politika')
-    fg.description('Аналитика Carnegie Russia-Eurasia')
-    fg.link(href=url, rel='alternate')
-    fg.language('ru')
-    
-    # VERSCHIEDENE METHODEN ARTIKEL ZU FINDEN
-    
-    articles_found = []
-    
-    # Methode 1: Suche nach allen Links zu Artikeln
-    print('🔍 Suche nach Artikel-Links...')
-    all_links = soup.find_all('a', href=True)
-    
-    for link in all_links:
-        href = link['href']
-        text = link.get_text().strip()
         
-        # Filter für Artikel-Links
-        if '/politika/' in href and len(text) > 20:
-            if not href.startswith('http'):
-                href = 'https://carnegieendowment.org' + href
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # RSS-Feed konfigurieren
+        fg = FeedGenerator()
+        fg.title('Carnegie Russia-Eurasia - Politika')
+        fg.description('Аналитика Carnegie Russia-Eurasia')
+        fg.link(href=url, rel='alternate')
+        fg.language('ru')
+        
+        articles_found = []
+        
+        # Methode 1: Suche nach allen Links zu Artikeln
+        print('🔍 Suche nach Artikel-Links...')
+        all_links = soup.find_all('a', href=True)
+        
+        for link in all_links:
+            href = link['href']
+            text = link.get_text().strip()
             
-            # Titel extrahieren
-            title = text
-            # Versuche besseren Titel zu finden
-            parent = link.find_parent(['div', 'article', 'section'])
-            if parent:
-                heading = parent.find(['h2', 'h3', 'h4', 'h5'])
-                if heading:
-                    title = heading.get_text().strip()
-            
-            if title and href:
-                articles_found.append((title, href))
-                print(f'   Found: {title[:50]}...')
-    
-    # Methode 2: Suche nach Überschriften
-    if not articles_found:
-        print('🔍 Suche nach Überschriften...')
-        headings = soup.find_all(['h2', 'h3', 'h4', 'h5'])
-        
-        for heading in headings:
-            title = heading.get_text().strip()
-            if len(title) > 20:
-                # Finde den nächstgelegenen Link
-                link = heading.find_parent('a') or heading.find_next('a')
-                if link and link.get('href'):
-                    href = link['href']
-                    if '/politika/' in href:
-                        if not href.startswith('http'):
-                            href = 'https://carnegieendowment.org' + href
-                        articles_found.append((title, href))
-                        print(f'   Found via heading: {title[:50]}...')
-    
-    # Methode 3: Suche nach Content-Containern
-    if not articles_found:
-        print('🔍 Suche nach Content-Containern...')
-        containers = soup.find_all(['article', 'div', 'section'], class_=True)
-        
-        for container in containers:
-            classes = ' '.join(container.get('class', []))
-            if any(word in classes.lower() for word in ['card', 'item', 'post', 'article', 'teaser']):
-                # Finde Titel und Link
-                title_elem = container.find(['h2', 'h3', 'h4', 'h5'])
-                link_elem = container.find('a', href=True)
+            if '/politika/' in href and len(text) > 20:
+                if not href.startswith('http'):
+                    href = 'https://carnegieendowment.org' + href
                 
-                if title_elem and link_elem:
-                    title = title_elem.get_text().strip()
-                    href = link_elem['href']
-                    
-                    if '/politika/' in href and len(title) > 20:
-                        if not href.startswith('http'):
-                            href = 'https://carnegieendowment.org' + href
-                        articles_found.append((title, href))
-                        print(f'   Found in container: {title[:50]}...')
-    
-    # Duplikate entfernen
-    unique_articles = {}
-    for title, href in articles_found:
-        unique_articles[href] = title
-    
-    print(f'📊 Gefundene Artikel: {len(unique_articles)}')
-    
-    # Artikel zum Feed hinzufügen
-    for href, title in list(unique_articles.items())[:15]:
-        fe = fg.add_entry()
-        fe.title(title)
-        fe.link(href=href)
-        fe.description(f'Анализ Carnegie: {title}')
-        fe.pubDate(datetime.now(pytz.utc))
-        print(f'   Added to feed: {title[:50]}...')
-    
-    # Feed speichern
-    fg.rss_file('carnegie_feed.xml', pretty=True)
-    
-    if len(unique_articles) > 0:
-        print(f'✅ Feed erfolgreich mit {len(unique_articles)} Artikeln erstellt')
-    else:
-        print('❌ Keine Artikel gefunden - Seitenstruktur könnte geändert haben')
-        print('💡 Debug-HTML gespeichert als debug_page.html')
-    "
+                title = text
+                parent = link.find_parent(['div', 'article', 'section'])
+                if parent:
+                    heading = parent.find(['h2', 'h3', 'h4', 'h5'])
+                    if heading:
+                        title = heading.get_text().strip()
+                
+                if title and href:
+                    articles_found.append((title, href))
+                    print(f'   Gefunden: {title[:50]}...')
+        
+        # Methode 2: Suche nach Überschriften
+        if not articles_found:
+            print('🔍 Suche nach Überschriften...')
+            headings = soup.find_all(['h2', 'h3', 'h4', 'h5'])
+            
+            for heading in headings:
+                title = heading.get_text().strip()
+                if len(title) > 20:
+                    link = heading.find_parent('a') or heading.find_next('a')
+                    if link and link.get('href'):
+                        href = link['href']
+                        if '/politika/' in href:
+                            if not href.startswith('http'):
+                                href = 'https://carnegieendowment.org' + href
+                            articles_found.append((title, href))
+                            print(f'   Gefunden via Überschrift: {title[:50]}...')
+        
+        # Duplikate entfernen
+        unique_articles = {}
+        for title, href in articles_found:
+            unique_articles[href] = title
+        
+        print(f'📊 Gefundene Artikel: {len(unique_articles)}')
+        
+        # Artikel zum Feed hinzufügen
+        for href, title in list(unique_articles.items())[:15]:
+            fe = fg.add_entry()
+            fe.title(title)
+            fe.link(href=href)
+            fe.description(f'Анализ Carnegie: {title}')
+            fe.pubDate(datetime.now(pytz.utc))
+            print(f'   Zum Feed hinzugefügt: {title[:50]}...')
+        
+        # Feed speichern
+        fg.rss_file('carnegie_feed.xml', pretty=True)
+        
+        if len(unique_articles) > 0:
+            print(f'✅ Feed erfolgreich mit {len(unique_articles)} Artikeln erstellt')
+        else:
+            print('❌ Keine Artikel gefunden')
+        "
+
+    - name: Update index.html
+      run: |
+        current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
+        cat > index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>RSS Feeds</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>📰 My RSS Feeds</h1>
+            <ul>
+                <li><a href="carnegie_feed.xml">Carnegie Russia-Eurasia</a></li>
+            </ul>
+            <p>Updated: $current_date</p>
+        </body>
+        </html>
+        EOF
+
+    - name: Commit and push changes
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        
+        # Pull changes first
+        git pull origin main --rebase --autostash || true
+        
+        # Add files
+        git add carnegie_feed.xml index.html
+        
+        # Commit
+        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
+        
+        # Push
+        git push origin main

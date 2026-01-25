@@ -8,166 +8,137 @@ on:
 jobs:
   update-feed:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.PAT_TOKEN }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.13'
+        python-version: '3.11'
 
     - name: Install dependencies
-      run: pip install requests beautifulsoup4 feedgen pytz
+      run: pip install requests beautifulsoup4 feedgen
 
     - name: Generate RSS feed
       run: |
-        python -c "
-        import requests
-        from bs4 import BeautifulSoup
-        from feedgen.feed import FeedGenerator
-        from datetime import datetime
-        import pytz
+        python3 -c "
+import requests
+from bs4 import BeautifulSoup
+from feedgen.feed import FeedGenerator
+from datetime import datetime
+import pytz
+
+# URL der Carnegie Politika Seite
+url = 'https://carnegieendowment.org/ru/russia-eurasia/politika'
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept-Language': 'ru-RU,ru;q=0.9'
+}
+
+print('Lade Seite:', url)
+response = requests.get(url, headers=headers, timeout=30)
+response.raise_for_status()
+
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# RSS Feed erstellen
+fg = FeedGenerator()
+fg.title('Carnegie Россия-Евразия - Политика')
+fg.description('Политические анализы Carnegie Россия-Евразия')
+fg.link(href=url, rel='alternate')
+fg.language('ru')
+
+# Einfache Suche nach Artikeln
+articles = []
+
+# Methode 1: Suche nach allen Links
+all_links = soup.find_all('a', href=True)
+
+for link in all_links:
+    try:
+        href = link.get('href', '')
+        text = link.get_text(strip=True)
         
-        url = 'https://carnegieendowment.org/ru/russia-eurasia'
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
-        }
-        
-        print('Lade Carnegie Russia-Eurasia Hauptseite...')
-        response = requests.get(url, headers=headers, timeout=20)
-        response.raise_for_status()
-        print('Seite geladen')
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # RSS-Feed konfigurieren
-        fg = FeedGenerator()
-        fg.title('Carnegie Россия-Евразия')
-        fg.description('Аналитика Carnegie Россия-Евразия')
-        fg.link(href=url, rel='alternate')
-        fg.language('ru')
-        
-        articles_found = []
-        
-        # Methode 1: Suche nach Publikations-Links
-        print('Suche nach Publikations-Links...')
-        publication_patterns = ['/publications/', '/ru/publications/', '/article', '/analysis']
-        
-        all_links = soup.find_all('a', href=True)
-        for link in all_links:
-            href = link['href']
-            text = link.get_text().strip()
-            
-            # Prüfe ob es ein Publikations-Link ist
-            is_publication = any(pattern in href for pattern in publication_patterns)
-            has_text = len(text) > 15
-            
-            if is_publication and has_text:
-                if not href.startswith('http'):
-                    href = 'https://carnegieendowment.org' + href
-                
-                title = text
-                articles_found.append((title, href))
-                print(f'Gefunden: {title[:60]}...')
-        
-        # Methode 2: Suche nach Karten/Cards
-        if len(articles_found) < 5:
-            print('Suche nach Content-Karten...')
-            cards = soup.find_all(['article', 'div'], class_=True)
-            
-            for card in cards[:50]:
-                try:
-                    link_elem = card.find('a', href=True)
-                    if not link_elem:
-                        continue
-                    
-                    href = link_elem['href']
-                    if not any(pattern in href for pattern in publication_patterns):
-                        continue
-                    
-                    if not href.startswith('http'):
-                        href = 'https://carnegieendowment.org' + href
-                    
-                    # Titel finden
-                    title = None
-                    for tag in ['h2', 'h3', 'h4', 'h5']:
-                        title_elem = card.find(tag)
-                        if title_elem:
-                            title = title_elem.get_text().strip()
-                            break
-                    
-                    if not title:
-                        title = link_elem.get_text().strip()
-                    
-                    if title and len(title) > 10:
-                        articles_found.append((title, href))
-                        print(f'Gefunden in Karte: {title[:60]}...')
-                        
-                except:
-                    continue
-        
-        # Duplikate entfernen
-        unique_articles = {}
-        for title, href in articles_found:
-            unique_articles[href] = title
-        
-        print(f'Gefundene Artikel: {len(unique_articles)}')
-        
-        # Artikel zum Feed hinzufügen
-        feed_count = 0
-        for href, title in list(unique_articles.items())[:15]:
-            try:
-                fe = fg.add_entry()
-                fe.title(title)
-                fe.link(href=href)
-                fe.description(f'Публикация Carnegie: {title}')
-                fe.pubDate(datetime.now(pytz.utc))
-                feed_count += 1
-                print(f'Zum Feed hinzugefuegt: {title[:60]}...')
-            except Exception as e:
+        # Filter für interessante Links
+        if '/ru/' in href and len(text) > 20:
+            # URL vervollständigen
+            if href.startswith('/'):
+                href = 'https://carnegieendowment.org' + href
+            elif not href.startswith('http'):
                 continue
-        
-        # Feed speichern
-        fg.rss_file('carnegie_feed.xml', pretty=True)
-        
-        if feed_count > 0:
-            print(f'Feed mit {feed_count} Artikeln erstellt')
-        else:
-            print('Keine Artikel gefunden')
+            
+            # Unerwünschte Links ausschließen
+            if any(x in href for x in ['/about/', '/contact', '/donate', '/subscribe', '/login', '/programs/']):
+                continue
+                
+            # Wahrscheinliche Artikel-Links
+            if any(x in href for x in ['/publications/', '/article', '/analysis', '/commentary', '/politika']):
+                articles.append((text, href))
+                print(f'Gefunden: {text[:50]}...')
+                
+    except Exception as e:
+        continue
+
+# Methode 2: Suche nach h2/h3 mit Links
+if len(articles) < 5:
+    for tag in ['h2', 'h3', 'h4']:
+        headings = soup.find_all(tag)
+        for heading in headings:
+            link = heading.find_parent('a') or heading.find('a')
+            if link and link.get('href'):
+                href = link.get('href')
+                text = heading.get_text(strip=True)
+                if len(text) > 15 and '/ru/' in href:
+                    if href.startswith('/'):
+                        href = 'https://carnegieendowment.org' + href
+                    if href not in [a[1] for a in articles]:
+                        articles.append((text, href))
+                        print(f'Gefunden via {tag}: {text[:50]}...')
+
+# Duplikate entfernen
+unique_articles = {}
+for title, href in articles:
+    if href not in unique_articles:
+        unique_articles[href] = title
+
+print(f'Total unique articles: {len(unique_articles)}')
+
+# Füge Artikel zum Feed hinzu (max 10)
+for i, (href, title) in enumerate(list(unique_articles.items())[:10]):
+    fe = fg.add_entry()
+    fe.title(title)
+    fe.link(href=href)
+    fe.description(title)
+    fe.pubDate(datetime.now(pytz.utc))
+    print(f'Added to feed ({i+1}): {title[:50]}...')
+
+# Feed speichern
+fg.rss_file('carnegie_feed.xml', pretty=True)
+print('RSS feed created successfully')
         "
 
-    - name: Update index.html
+    - name: Create index.html
       run: |
-        current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
-        cat > index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>RSS Feeds</title>
-            <meta charset="utf-8">
-        </head>
-        <body>
-            <h1>📰 My RSS Feeds</h1>
-            <ul>
-                <li><a href="carnegie_feed.xml">Carnegie Россия-Евразия</a></li>
-            </ul>
-            <p>Updated: $current_date</p>
-        </body>
-        </html>
-        EOF
+        echo '<!DOCTYPE html>' > index.html
+        echo '<html>' >> index.html
+        echo '<head>' >> index.html
+        echo '<title>Carnegie RSS Feed</title>' >> index.html
+        echo '<meta charset="utf-8">' >> index.html
+        echo '</head>' >> index.html
+        echo '<body>' >> index.html
+        echo '<h1>Carnegie Россия-Евразия RSS Feed</h1>' >> index.html
+        echo '<p><a href="carnegie_feed.xml">RSS Feed abonnieren</a></p>' >> index.html
+        echo "<p>Updated: $(date -u +'%Y-%m-%d %H:%M UTC')</p>" >> index.html
+        echo '</body>' >> index.html
+        echo '</html>' >> index.html
 
-    - name: Commit and push changes
+    - name: Commit and push
       run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git pull origin main --rebase --autostash || true
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
         git add carnegie_feed.xml index.html
-        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes"
-        git push origin main
+        git commit -m "Update feed $(date -u +'%Y-%m-%d')" || echo "No changes"
+        git push

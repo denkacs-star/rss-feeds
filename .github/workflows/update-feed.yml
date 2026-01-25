@@ -13,105 +13,62 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Generate RSS feed (simple XML)
+    - name: Generate RSS feed
       run: |
         cat > carnegie_feed.xml << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0">
 <channel>
   <title>Carnegie Россия-Евразия - Политика</title>
   <link>https://carnegieendowment.org/ru/russia-eurasia/politika</link>
   <description>Политические анализы Carnegie Россия-Евразия</description>
   <language>ru</language>
   <lastBuildDate>Sat, 25 Jan 2026 10:00:00 GMT</lastBuildDate>
-  <atom:link href="https://denkacs-star.github.io/rss-feeds/carnegie_feed.xml" rel="self" type="application/rss+xml"/>
   
   <item>
     <title>Гренландия в центре внимания России и Китая</title>
     <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</link>
-    <description>Анализ Carnegie: Гренландия в центре внимания России и Китая</description>
+    <description>Анализ Carnegie</description>
     <pubDate>Fri, 24 Jan 2026 10:00:00 GMT</pubDate>
-    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</guid>
   </item>
   
   <item>
     <title>Китай как глобальный поставщик безопасности</title>
     <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</link>
-    <description>Анализ Carnegie: Китай как глобальный поставщик безопасности</description>
+    <description>Анализ Carnegie</description>
     <pubDate>Thu, 23 Jan 2026 10:00:00 GMT</pubDate>
-    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</guid>
   </item>
   
   <item>
     <title>Россия в потерянном глобальном хаосе</title>
     <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</link>
-    <description>Анализ Carnegie: Россия в потерянном глобальном хаосе</description>
+    <description>Анализ Carnegie</description>
     <pubDate>Wed, 22 Jan 2026 10:00:00 GMT</pubDate>
-    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</guid>
-  </item>
-  
-  <item>
-    <title>Новые вызовы в международной политике</title>
-    <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/12/international-challenges</link>
-    <description>Анализ Carnegie: Новые вызовы в международной политике</description>
-    <pubDate>Tue, 21 Jan 2026 10:00:00 GMT</pubDate>
-    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/12/international-challenges</guid>
-  </item>
-  
-  <item>
-    <title>Экономические санкции и их последствия</title>
-    <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/economic-sanctions</link>
-    <description>Анализ Carnegie: Экономические санкции и их последствия</description>
-    <pubDate>Mon, 20 Jan 2026 10:00:00 GMT</pubDate>
-    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/economic-sanctions</guid>
   </item>
 </channel>
 </rss>
 EOF
-        
-        echo "✅ RSS feed created"
-        echo "File content preview:"
-        head -n 20 carnegie_feed.xml
 
     - name: Create index.html
       run: |
         current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
-        cat > index.html << 'EOF'
-        <!DOCTYPE html>
-        <html>
-        <head>
-        <title>Carnegie RSS Feed</title>
-        <meta charset="utf-8">
-        </head>
-        <body>
-        <h1>Carnegie Россия-Евразия RSS Feed</h1>
-        <p><a href="carnegie_feed.xml">RSS Feed</a></p>
-        <p>Updated: $current_date</p>
-        </body>
-        </html>
-        EOF
-
-    - name: Validate XML
-      run: |
-        echo "Validating XML..."
-        python3 -c "
-import xml.etree.ElementTree as ET
-try:
-    tree = ET.parse('carnegie_feed.xml')
-    root = tree.getroot()
-    print('✅ XML is valid')
-    print(f'Root tag: {root.tag}')
-    print(f'Number of items: {len(root.findall(\".//item\"))}')
-except Exception as e:
-    print(f'❌ XML error: {e}')
-    import traceback
-    traceback.print_exc()
-        "
+        echo '<!DOCTYPE html>' > index.html
+        echo '<html>' >> index.html
+        echo '<head>' >> index.html
+        echo '<title>Carnegie RSS Feed</title>' >> index.html
+        echo '<meta charset="utf-8">' >> index.html
+        echo '</head>' >> index.html
+        echo '<body>' >> index.html
+        echo '<h1>Carnegie Россия-Евразия RSS Feed</h1>' >> index.html
+        echo '<p><a href="carnegie_feed.xml">RSS Feed</a></p>' >> index.html
+        echo "<p>Updated: $current_date</p>" >> index.html
+        echo '</body>' >> index.html
+        echo '</html>' >> index.html
 
     - name: Commit and push
       run: |
         git config user.name "github-actions"
         git config user.email "github-actions@github.com"
         git add carnegie_feed.xml index.html
-        git commit -m "Update feed $(date -u +'%Y-%m-%d %H:%M')"
+        git commit -m "Update feed $(date -u +'%Y-%m-%d')"
         git push

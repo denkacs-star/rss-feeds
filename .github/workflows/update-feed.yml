@@ -1,3 +1,4 @@
+---
 name: Update Carnegie RSS Feed
 on:
   schedule:
@@ -32,7 +33,6 @@ jobs:
         from feedgen.feed import FeedGenerator
         from datetime import datetime
         import pytz
-        import re
         
         url = 'https://carnegieendowment.org/ru/russia-eurasia'
         headers = {
@@ -40,38 +40,25 @@ jobs:
             'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7'
         }
         
-        print('📡 Lade Carnegie Russia-Eurasia Hauptseite...')
+        print('Lade Carnegie Russia-Eurasia Hauptseite...')
         response = requests.get(url, headers=headers, timeout=20)
         response.raise_for_status()
-        print('✅ Seite geladen')
+        print('Seite geladen')
         
         soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # DEBUG: Seite speichern zur Analyse (optional)
-        # with open('debug_page.html', 'w', encoding='utf-8') as f:
-        #     f.write(soup.prettify())
-        # print('📄 Debug-HTML gespeichert')
         
         # RSS-Feed konfigurieren
         fg = FeedGenerator()
         fg.title('Carnegie Россия-Евразия')
-        fg.description('Аналитика и публикации Carnegie Россия-Евразия')
+        fg.description('Аналитика Carnegie Россия-Евразия')
         fg.link(href=url, rel='alternate')
         fg.language('ru')
         
         articles_found = []
         
-        print('🔍 Analysiere Seitenstruktur...')
-        
         # Methode 1: Suche nach Publikations-Links
-        print('📰 Suche nach Publikations-Links...')
-        publication_patterns = [
-            '/publications/', 
-            '/ru/publications/',
-            '/article',
-            '/analysis',
-            '/commentary'
-        ]
+        print('Suche nach Publikations-Links...')
+        publication_patterns = ['/publications/', '/ru/publications/', '/article', '/analysis']
         
         all_links = soup.find_all('a', href=True)
         for link in all_links:
@@ -80,43 +67,23 @@ jobs:
             
             # Prüfe ob es ein Publikations-Link ist
             is_publication = any(pattern in href for pattern in publication_patterns)
-            has_sufficient_text = len(text) > 15
+            has_text = len(text) > 15
             
-            if is_publication and has_sufficient_text:
-                # URL vervollständigen
+            if is_publication and has_text:
                 if not href.startswith('http'):
                     href = 'https://carnegieendowment.org' + href
                 
-                # Titel aus Link-Text oder umgebenden Elementen
                 title = text
-                
-                # Versuche besseren Titel zu finden
-                parent = link.find_parent(['div', 'article', 'section', 'li'])
-                if parent:
-                    # Suche nach Überschrift in der Nähe
-                    heading = parent.find(['h2', 'h3', 'h4', 'h5', 'h6', 'span'])
-                    if heading and heading.get_text().strip():
-                        title = heading.get_text().strip()
-                    else:
-                        # Suche nach div mit Titel-Klasse
-                        title_div = parent.find('div', class_=lambda x: x and any(word in str(x).lower() for word in ['title', 'headline', 'name']))
-                        if title_div:
-                            title = title_div.get_text().strip()
-                
-                if title and href and href not in [a[1] for a in articles_found]:
-                    articles_found.append((title, href))
-                    print(f'   📄 Gefunden: {title[:60]}...')
+                articles_found.append((title, href))
+                print(f'Gefunden: {title[:60]}...')
         
-        # Methode 2: Suche nach Content-Karten/Cards
+        # Methode 2: Suche nach Karten/Cards
         if len(articles_found) < 5:
-            print('🎴 Suche nach Content-Karten...')
-            cards = soup.find_all(['article', 'div'], class_=lambda x: x and any(
-                word in str(x).lower() for word in ['card', 'item', 'post', 'article', 'teaser', 'publication', 'feature']
-            ))
+            print('Suche nach Content-Karten...')
+            cards = soup.find_all(['article', 'div'], class_=True)
             
-            for card in cards:
+            for card in cards[:50]:
                 try:
-                    # Link finden
                     link_elem = card.find('a', href=True)
                     if not link_elem:
                         continue
@@ -130,60 +97,30 @@ jobs:
                     
                     # Titel finden
                     title = None
-                    title_selectors = [
-                        ('h2', 'h3', 'h4', 'h5', 'h6'),
-                        ('span', 'div'),
-                        ('a',)
-                    ]
-                    
-                    for selectors in title_selectors:
-                        title_elem = card.find(selectors, class_=lambda x: x and any(
-                            word in str(x).lower() for word in ['title', 'headline', 'name']
-                        ))
-                        if title_elem and title_elem.get_text().strip():
+                    for tag in ['h2', 'h3', 'h4', 'h5']:
+                        title_elem = card.find(tag)
+                        if title_elem:
                             title = title_elem.get_text().strip()
                             break
                     
                     if not title:
                         title = link_elem.get_text().strip()
                     
-                    if title and len(title) > 10 and href not in [a[1] for a in articles_found]:
+                    if title and len(title) > 10:
                         articles_found.append((title, href))
-                        print(f'   🎴 Gefunden in Karte: {title[:60]}...')
+                        print(f'Gefunden in Karte: {title[:60]}...')
                         
-                except Exception as e:
+                except:
                     continue
-        
-        # Methode 3: Einfache Suche nach relevanten Links
-        if len(articles_found) < 3:
-            print('🔗 Einfache Suche nach relevanten Links...')
-            for link in all_links[:100]:  # Nur erste 100 Links prüfen
-                href = link['href']
-                text = link.get_text().strip()
-                
-                # Filter für interessante Links
-                is_russian_content = '/ru/' in href
-                has_meaningful_text = 30 < len(text) < 200
-                not_navigation = not any(word in text.lower() for word in [
-                    'читать', 'подробнее', 'далее', 'читать далее', 'читать больше'
-                ])
-                
-                if is_russian_content and has_meaningful_text and not_navigation:
-                    if not href.startswith('http'):
-                        href = 'https://carnegieendowment.org' + href
-                    
-                    if href not in [a[1] for a in articles_found]:
-                        articles_found.append((text, href))
-                        print(f'   🔗 Einfacher Fund: {text[:60]}...')
         
         # Duplikate entfernen
         unique_articles = {}
         for title, href in articles_found:
             unique_articles[href] = title
         
-        print(f'📊 Insgesamt gefundene Artikel: {len(unique_articles)}')
+        print(f'Gefundene Artikel: {len(unique_articles)}')
         
-        # Artikel zum Feed hinzufügen (max 15)
+        # Artikel zum Feed hinzufügen
         feed_count = 0
         for href, title in list(unique_articles.items())[:15]:
             try:
@@ -193,19 +130,17 @@ jobs:
                 fe.description(f'Публикация Carnegie: {title}')
                 fe.pubDate(datetime.now(pytz.utc))
                 feed_count += 1
-                print(f'   ✅ Zum Feed hinzugefügt ({feed_count}): {title[:60]}...')
+                print(f'Zum Feed hinzugefuegt: {title[:60]}...')
             except Exception as e:
-                print(f'   ❌ Fehler beim Hinzufügen: {e}')
                 continue
         
         # Feed speichern
         fg.rss_file('carnegie_feed.xml', pretty=True)
         
         if feed_count > 0:
-            print(f'🎉 Feed erfolgreich mit {feed_count} Artikeln erstellt')
+            print(f'Feed mit {feed_count} Artikeln erstellt')
         else:
-            print('❌ Keine Artikel für den Feed gefunden')
-            print('💡 Tipp: Prüfen Sie die Debug-HTML oder versuchen Sie andere Selektoren')
+            print('Keine Artikel gefunden')
         "
 
     - name: Update index.html
@@ -232,8 +167,7 @@ jobs:
       run: |
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
-        
         git pull origin main --rebase --autostash || true
         git add carnegie_feed.xml index.html
-        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
+        git commit -m "Auto-update: $(date -u +'%Y-%m-%d %H:%M UTC')" || echo "No changes"
         git push origin main

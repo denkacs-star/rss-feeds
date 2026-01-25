@@ -1,0 +1,67 @@
+name: Update RSS Feeds
+
+on:
+  schedule:
+    # Läuft alle 6 Stunden
+    - cron: '0 */6 * * *'
+  # Erlaubt manuelles Triggern
+  workflow_dispatch:
+  # Optional: Bei jedem Push auf main
+  push:
+    branches:
+      - main
+
+jobs:
+  update-feeds:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install playwright feedgen pytz requests beautifulsoup4 lxml
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Run RSS feed scraper
+        run: |
+          python scraper.py
+        env:
+          PYTHONUNBUFFERED: 1
+      
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com"
+          git add *.xml
+          git add rss-feeds/*.xml || true
+          git commit -m "🔄 Update RSS feeds - $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: No changes detected
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: |
+          echo "ℹ️ No changes in RSS feeds - skipping commit"

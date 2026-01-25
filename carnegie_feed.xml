@@ -1,40 +1,138 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0">
   <channel>
-    <title>Carnegie Россия-Евразия</title>
-    <link>https://carnegieendowment.org/ru/russia-eurasia</link>
-    <description>Аналитика Carnegie Россия-Евразия</description>
+    <title>Carnegie Россия-Евразия: Политика</title>
+    <link>https://carnegieendowment.org/ru/russia-eurasia/politika</link>
+    <description>Политические аналитики Carnegie Россия-Евразия</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Python Playwright RSS Generator</generator>
     <language>ru</language>
-    <lastBuildDate>Sun, 25 Jan 2026 18:57:10 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 25 Jan 2026 20:15:03 +0000</lastBuildDate>
     <item>
-      <title>За спинами Путина и Си. Куда ведет сближение США и Центральной Азии</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/trump-central-asia-new-deals</link>
-      <description>За спинами Путина и Си. Куда ведет сближение США и Центральной Азии</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/trump-central-asia-new-deals</guid>
-      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+      <title>Новогодняя перезагрузка. К чему приведут кадровые решения Зеленского</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/ukraine-government-reshuffle</link>
+      <description>На одном из самых тяжелых этапов войны президенту приходится менять руководство двух ключевых спецслужб, потому что дефицит кадров и антикоррупционные расследования не оставляют ему другого способа стабилизировать ситуацию внутри страны.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/ukraine-government-reshuffle</guid>
+      <pubDate>Wed, 07 Jan 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
-      <title>Тест для тандема. Зачем в Кыргызстане меняют парламент и избирательную систему</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/kyrgyzstan-parliamentary-reform</link>
-      <description>Тест для тандема. Зачем в Кыргызстане меняют парламент и избирательную систему</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/kyrgyzstan-parliamentary-reform</guid>
-      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+      <title>Осознанная жертва. О жизни Павла Кушнира и фильме о нем</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/pavel-kushnir-documentary-essay</link>
+      <description>Просто делаешь что должно и не предаешь своих убеждений. Автор фильма о Павле Кушнире — о попытке преодолеть его одиночество посмертно.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/pavel-kushnir-documentary-essay</guid>
+      <pubDate>Thu, 08 Jan 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
-      <title>Списки без границ. Как Кремль использует для репрессий финансовую систему Запада</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-eu-banking-exploits</link>
-      <description>Списки без границ. Как Кремль использует для репрессий финансовую систему Запада</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-eu-banking-exploits</guid>
-      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+      <title>Рекордсмен по запасам. Каковы перспективы похода Трампа за венесуэльской нефтью</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/venezuela-oil-perspectives</link>
+      <description>Венесуэла не способна быстро выбросить на мировой рынок значительные объемы нефти. А если какая-то новая нефть оттуда и поступит, то она будет относительно дорогостоящей в добыче. Удерживать с ее помощью мировые цены на уровне ниже $50 за баррель будет практически невозможно.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/venezuela-oil-perspectives</guid>
+      <pubDate>Thu, 08 Jan 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
-      <title>Заморозка без санкций. Что происходит с иностранными вложениями российского среднего класса</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-middle-class-money-eu</link>
-      <description>Заморозка без санкций. Что происходит с иностранными вложениями российского среднего класса</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-middle-class-money-eu</guid>
-      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+      <title>Интернет и вертолеты. Как Россия отреагирует на протесты в Иране</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/iran-protests-russia-involvement</link>
+      <description>Экспорт российских вертолетов в Иран для борьбы с повстанцами представить можно. Как и то, что Москва станет убежищем для бегущего от своего народа иранского руководства. Но российских военных, которые вступаются за иранский режим на его территории, пока представить очень сложно.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/iran-protests-russia-involvement</guid>
+      <pubDate>Fri, 09 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Запреты без эффекта. Зачем Кремль врет про победу над кибермошенниками</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-cybersecurity-problems</link>
+      <description>Власти годами транслируют тезисы о безопасности «суверенных» цифровых сервисов, продвигают их как альтернативу западным и вводят все новые ограничения в Рунете «по соображениям безопасности». Однако на практике защитить людей от утечек и мошенников они не способны.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-cybersecurity-problems</guid>
+      <pubDate>Mon, 12 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Коллекционер земель. Почему украинские села для Путина важнее сделки с Трампом</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-putin-land-conquest</link>
+      <description>В рациональную логику не вписывается упорное нежелание Путина обменять мечты о небольших территориях, не обладающих экономической ценностью, на внушительные дивиденды, которые сулит сделка с Трампом. Но нелепым это выглядит для всех, кроме самого российского лидера: он занят тем, что пишет главу о себе в учебнике истории.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-putin-land-conquest</guid>
+      <pubDate>Tue, 13 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Калийный треугольник. Как поступит Литва с транзитом белорусских удобрений</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/belarus-eu-fertilizers-sanctions</link>
+      <description>Сама дискуссия о возобновлении транзита белорусских удобрений отражает кризис санкционной политики, когда инструменты давления перестают соответствовать заявленным целям. Все явственнее звучит вопрос о том, почему меры, принятые для ослабления режима Лукашенко, в итоге укрепляют позиции Кремля.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/belarus-eu-fertilizers-sanctions</guid>
+      <pubDate>Thu, 15 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Возвращение легенды. Почему Тимошенко опять в центре украинской политики</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/ukraine-timoshenko-political-comeback</link>
+      <description>Локальный сюжет с попавшейся на горячем политической пенсионеркой переплетается с большими процессами, происходящими в украинском парламенте.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/ukraine-timoshenko-political-comeback</guid>
+      <pubDate>Fri, 16 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Фантазии о воссоединении. Как в Азербайджане воспринимают иранские протесты</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/azerbaijan-iran-protests-reaction</link>
+      <description>Баку хоть и позволяет радикальным националистам публично рассуждать о воссоединении, сам предпочитает не комментировать протесты напрямую.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/azerbaijan-iran-protests-reaction</guid>
+      <pubDate>Mon, 19 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>От Венесуэлы до Гренландии. От выбора мира к выбору войны</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</link>
+      <description>В Москве привыкли, что важнейшим активом России стала не военная мощь сама по себе, а приложенная к ней непредсказуемость: готовность вести себя вызывающе, рисковать, нарушать правила. Но неожиданно для себя Россия перестала быть лидирующим разрушителем, а ее козырные свойства перехватил в лице Трампа глобальный игрок с превосходящими амбициями и возможностями.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</guid>
+      <pubDate>Tue, 20 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Новый мировой жандарм. Как Китай пробивается в глобальные лидеры в сфере безопасности</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</link>
+      <description>В китайской трактовке безопасности главная угроза стабильности исходит не извне (то есть от других стран), а изнутри — от экстремизма, сепаратизма, терроризма и цветных революций. Противодействовать таким угрозам исключительно военными средствами невозможно, поэтому Китай использует военно-правоохранительные инструменты, которые сначала выстроил у себя, а затем начал распространять по всему миру.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</guid>
+      <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Тающее равновесие. Насколько Китай и Россия действительно интересуются Гренландией</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</link>
+      <description>Мнимые угрозы со стороны Китая и России представляют и для Гренландии, и для Арктики куда меньшую опасность, чем перспектива ковбойского захвата острова.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</guid>
+      <pubDate>Fri, 23 Jan 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Как Китай приспособился к «Талибану» в Афганистане</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-afghanistan-adaptation</link>
+      <description>Как Китай приспособился к «Талибану» в Афганистане</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-afghanistan-adaptation</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
+    </item>
+    <item>
+      <title>Осознанная жертва. О жизни Павла Кушнира и фильме о нем</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/pavel-kushnir-documentary-essay</link>
+      <description>Осознанная жертва. О жизни Павла Кушнира и фильме о нем</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/pavel-kushnir-documentary-essay</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
+    </item>
+    <item>
+      <title>Коллекционер земель. Почему украинские села для Путина важнее сделки с Трампом</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-putin-land-conquest</link>
+      <description>Коллекционер земель. Почему украинские села для Путина важнее сделки с Трампом</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-putin-land-conquest</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
+    </item>
+    <item>
+      <title>Калийный треугольник. Как поступит Литва с транзитом белорусских удобрений</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/belarus-eu-fertilizers-sanctions</link>
+      <description>Калийный треугольник. Как поступит Литва с транзитом белорусских удобрений</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/belarus-eu-fertilizers-sanctions</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
+    </item>
+    <item>
+      <title>Новый мировой жандарм. Как Китай пробивается в глобальные лидеры в сфере безопасности</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</link>
+      <description>Новый мировой жандарм. Как Китай пробивается в глобальные лидеры в сфере безопасности</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
+    </item>
+    <item>
+      <title>Тающее равновесие. Насколько Китай и Россия действительно интересуются Гренландией</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</link>
+      <description>Мнимые угрозы со стороны Китая и России представляют и для Гренландии, и для Арктики куда меньшую опасность, чем перспектива ковбойского захвата острова.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</guid>
+      <pubDate>Sun, 25 Jan 2026 20:15:02 +0000</pubDate>
     </item>
   </channel>
 </rss>

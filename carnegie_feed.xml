@@ -5,16 +5,36 @@
     <link>https://carnegieendowment.org/ru/russia-eurasia</link>
     <description>Аналитика Carnegie Россия-Евразия</description>
     <docs>http://www.rssboard.org/rss-specification</docs>
-    <generator>python-feedgen</generator>
+    <generator>Python Playwright RSS Generator</generator>
     <language>ru</language>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <lastBuildDate>Sun, 25 Jan 2026 08:25:50 +0000</lastBuildDate>
-=======
-    <lastBuildDate>Sun, 25 Jan 2026 09:37:37 +0000</lastBuildDate>
->>>>>>> Stashed changes
-=======
-    <lastBuildDate>Sun, 25 Jan 2026 09:41:42 +0000</lastBuildDate>
->>>>>>> Stashed changes
+    <lastBuildDate>Sun, 25 Jan 2026 18:57:10 +0000</lastBuildDate>
+    <item>
+      <title>За спинами Путина и Си. Куда ведет сближение США и Центральной Азии</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/trump-central-asia-new-deals</link>
+      <description>За спинами Путина и Си. Куда ведет сближение США и Центральной Азии</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/trump-central-asia-new-deals</guid>
+      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+    </item>
+    <item>
+      <title>Тест для тандема. Зачем в Кыргызстане меняют парламент и избирательную систему</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/kyrgyzstan-parliamentary-reform</link>
+      <description>Тест для тандема. Зачем в Кыргызстане меняют парламент и избирательную систему</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/kyrgyzstan-parliamentary-reform</guid>
+      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+    </item>
+    <item>
+      <title>Списки без границ. Как Кремль использует для репрессий финансовую систему Запада</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-eu-banking-exploits</link>
+      <description>Списки без границ. Как Кремль использует для репрессий финансовую систему Запада</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-eu-banking-exploits</guid>
+      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+    </item>
+    <item>
+      <title>Заморозка без санкций. Что происходит с иностранными вложениями российского среднего класса</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-middle-class-money-eu</link>
+      <description>Заморозка без санкций. Что происходит с иностранными вложениями российского среднего класса</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2025/11/russia-middle-class-money-eu</guid>
+      <pubDate>Sun, 25 Jan 2026 18:57:10 +0000</pubDate>
+    </item>
   </channel>
 </rss>

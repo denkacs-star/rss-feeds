@@ -19,7 +19,7 @@ jobs:
         python-version: '3.11'
 
     - name: Install dependencies
-      run: pip install requests beautifulsoup4 feedgen
+      run: pip install requests beautifulsoup4 feedgen lxml
 
     - name: Generate RSS feed
       run: |
@@ -27,172 +27,281 @@ jobs:
 import requests
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
-import random
+import re
 
-# Alternative URL - Carnegie Publications Feed
-url = 'https://carnegieendowment.org/russia-eurasia/publications'
+# URL der Hauptseite mit Artikelliste
+BASE_URL = 'https://carnegieendowment.org/ru/russia-eurasia/politika'
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
     'Accept-Encoding': 'gzip, deflate, br',
+    'Referer': 'https://carnegieendowment.org/',
+    'DNT': '1',
     'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1',
-    'Cache-Control': 'max-age=0'
+    'Upgrade-Insecure-Requests': '1'
 }
 
-print('Trying to fetch Carnegie publications...')
+print(f'📡 Lade Seite: {BASE_URL}')
 
 try:
-    # Erster Versuch: Haupt-Publikationen Seite
-    response = requests.get(url, headers=headers, timeout=30)
-    print(f'Status Code: {response.status_code}')
-    
-    if response.status_code != 200:
-        print('Trying alternative URL...')
-        # Alternative URL
-        url = 'https://carnegieendowment.org/search?lang=ru&contentType=publication&program=russia-eurasia'
-        response = requests.get(url, headers=headers, timeout=30)
-        print(f'Alternative Status: {response.status_code}')
-    
+    session = requests.Session()
+    response = session.get(BASE_URL, headers=headers, timeout=30)
     response.raise_for_status()
+    print(f'✅ Status: {response.status_code}')
     
-except Exception as e:
-    print(f'Error fetching page: {e}')
-    # Erstelle einen Dummy-Feed falls Seite nicht erreichbar
-    print('Creating fallback feed with sample articles...')
+    # HTML parsen
+    soup = BeautifulSoup(response.content, 'lxml')
+    
+    # DEBUG: Speichere HTML zur Analyse
+    with open('debug.html', 'w', encoding='utf-8') as f:
+        f.write(soup.prettify())
+    print('📄 Debug-HTML gespeichert')
     
     # RSS Feed erstellen
     fg = FeedGenerator()
-    fg.title('Carnegie Россия-Евразия - Publications')
-    fg.description('Публикации Carnegie Россия-Евразия (Fallback Feed)')
-    fg.link(href='https://carnegieendowment.org/russia-eurasia', rel='alternate')
+    fg.title('Carnegie Россия-Евразия - Политика')
+    fg.description('Политические анализы Carnegie Россия-Евразия')
+    fg.link(href=BASE_URL, rel='alternate')
     fg.language('ru')
     
-    # Dummy-Artikel hinzufügen
-    sample_articles = [
-        ('Российско-китайские отношения: новые вызовы', 'https://carnegieendowment.org/russia-eurasia/publications/12345'),
-        ('Экономические санкции и их последствия', 'https://carnegieendowment.org/russia-eurasia/publications/12346'),
-        ('Политические процессы в Центральной Азии', 'https://carnegieendowment.org/russia-eurasia/publications/12347'),
-        ('Энергетическая безопасность Евразии', 'https://carnegieendowment.org/russia-eurasia/publications/12348'),
-        ('Цифровая трансформация в регионе', 'https://carnegieendowment.org/russia-eurasia/publications/12349')
+    articles_found = []
+    
+    # METHODE 1: Direkte Suche nach Artikel-Links mit dem bekannten Muster
+    print('🔍 Suche nach Artikel-Links mit Muster /politika/YYYY/MM/...')
+    
+    # Finde alle Links mit dem Politika-Muster
+    all_links = soup.find_all('a', href=re.compile(r'/ru/russia-eurasia/politika/\d{4}/\d{2}/'))
+    
+    for link in all_links:
+        try:
+            href = link.get('href', '')
+            
+            # URL vervollständigen falls nötig
+            if href.startswith('/'):
+                href = 'https://carnegieendowment.org' + href
+            
+            # Titel extrahieren
+            title = link.get_text(strip=True)
+            
+            # Wenn Link-Text zu kurz ist, versuche Eltern-Element
+            if len(title) < 20:
+                parent = link.find_parent(['div', 'article', 'li', 'section'])
+                if parent:
+                    # Suche nach Überschrift in der Nähe
+                    for tag in ['h2', 'h3', 'h4', 'h5', 'h6']:
+                        heading = parent.find(tag)
+                        if heading:
+                            title = heading.get_text(strip=True)
+                            break
+            
+            # Prüfe ob es ein gültiger Artikel ist
+            if title and len(title) > 15 and href not in [a[1] for a in articles_found]:
+                # Prüfe ob die URL dem erwarteten Muster entspricht
+                if re.match(r'https://carnegieendowment\.org/ru/russia-eurasia/politika/\d{4}/\d{2}/[a-zA-Z0-9-]+', href):
+                    articles_found.append((title, href))
+                    print(f'   ✅ Gefunden: {title[:70]}...')
+                    print(f'      URL: {href}')
+        
+        except Exception as e:
+            continue
+    
+    # METHODE 2: Suche nach Container mit Artikel-Daten
+    if len(articles_found) < 3:
+        print('🔍 Suche nach Artikel-Containern...')
+        
+        # Häufige Container-Klassen für Artikel
+        container_selectors = [
+            'article',
+            'div.publication-item',
+            'div.card',
+            'div.teaser',
+            'div.post-item',
+            'div[class*=\"publication\"]',
+            'div[class*=\"article\"]',
+            'div[class*=\"post\"]',
+            'div[class*=\"item\"]'
+        ]
+        
+        for selector in container_selectors:
+            containers = soup.select(selector)
+            for container in containers[:20]:  # Nur erste 20 prüfen
+                try:
+                    # Finde Link in Container
+                    link = container.find('a', href=re.compile(r'/politika/\d{4}/\d{2}/'))
+                    if not link:
+                        continue
+                    
+                    href = link.get('href', '')
+                    if href.startswith('/'):
+                        href = 'https://carnegieendowment.org' + href
+                    
+                    # Titel finden
+                    title = None
+                    
+                    # 1. Versuche: h2-h6 Tags
+                    for tag in ['h2', 'h3', 'h4', 'h5', 'h6']:
+                        heading = container.find(tag)
+                        if heading:
+                            title = heading.get_text(strip=True)
+                            break
+                    
+                    # 2. Versuche: div mit Titel-Klasse
+                    if not title:
+                        title_div = container.find('div', class_=lambda x: x and any(word in str(x).lower() for word in ['title', 'headline', 'name']))
+                        if title_div:
+                            title = title_div.get_text(strip=True)
+                    
+                    # 3. Versuche: Link-Text
+                    if not title:
+                        title = link.get_text(strip=True)
+                    
+                    if title and len(title) > 15 and href not in [a[1] for a in articles_found]:
+                        if re.match(r'https://carnegieendowment\.org/ru/russia-eurasia/politika/\d{4}/\d{2}/[a-zA-Z0-9-]+', href):
+                            articles_found.append((title, href))
+                            print(f'   ✅ In Container gefunden: {title[:70]}...')
+                
+                except Exception as e:
+                    continue
+    
+    # METHODE 3: Einfache Suche nach allen Links und Filter
+    if len(articles_found) < 3:
+        print('🔍 Einfache Suche nach allen Links...')
+        
+        all_links = soup.find_all('a', href=True)
+        for link in all_links[:100]:  # Nur erste 100 prüfen
+            href = link.get('href', '')
+            
+            # Filter für Politika-Artikel
+            if '/ru/russia-eurasia/politika/' in href and re.search(r'/\d{4}/\d{2}/', href):
+                if href.startswith('/'):
+                    href = 'https://carnegieendowment.org' + href
+                
+                title = link.get_text(strip=True)
+                
+                # Wenn Titel zu kurz, versuche umgebenden Text
+                if len(title) < 20:
+                    # Nimm Text von Eltern-Element
+                    parent = link.parent
+                    if parent:
+                        parent_text = parent.get_text(strip=True)
+                        if len(parent_text) > len(title):
+                            title = parent_text
+                
+                if title and len(title) > 15 and href not in [a[1] for a in articles_found]:
+                    articles_found.append((title, href))
+                    print(f'   ✅ Einfache Suche: {title[:70]}...')
+    
+    # Duplikate entfernen
+    unique_articles = {}
+    for title, href in articles_found:
+        unique_articles[href] = title
+    
+    print(f'📊 Total gefundene Artikel: {len(unique_articles)}')
+    
+    # Falls keine Artikel gefunden, erstelle Fallback
+    if len(unique_articles) == 0:
+        print('⚠️  Keine Artikel gefunden, erstelle Fallback...')
+        
+        # Fallback-Artikel mit den von Ihnen bereitgestellten URLs
+        fallback_articles = [
+            ('Гренландия в центре внимания России и Китая', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat'),
+            ('Китай как глобальный поставщик безопасности', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider'),
+            ('Россия в потерянном глобальном хаосе', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos')
+        ]
+        
+        for title, href in fallback_articles:
+            unique_articles[href] = title
+    
+    # Artikel zum Feed hinzufügen
+    feed_count = 0
+    for href, title in list(unique_articles.items())[:15]:
+        try:
+            fe = fg.add_entry()
+            fe.title(title)
+            fe.link(href=href)
+            fe.description(f'Политический анализ Carnegie: {title}')
+            
+            # Extrahiere Datum aus URL (z.B. /2026/01/)
+            date_match = re.search(r'/(\d{4})/(\d{2})/', href)
+            if date_match:
+                year = int(date_match.group(1))
+                month = int(date_match.group(2))
+                pub_date = datetime(year, month, 1, tzinfo=pytz.utc)
+            else:
+                pub_date = datetime.now(pytz.utc)
+            
+            fe.pubDate(pub_date)
+            feed_count += 1
+            print(f'   📝 Zum Feed hinzugefügt ({feed_count}): {title[:70]}...')
+        
+        except Exception as e:
+            print(f'   ❌ Fehler beim Hinzufügen: {e}')
+            continue
+    
+    # Feed speichern
+    fg.rss_file('carnegie_feed.xml', pretty=True)
+    
+    if feed_count > 0:
+        print(f'🎉 RSS Feed erfolgreich mit {feed_count} Artikeln erstellt!')
+    else:
+        print('❌ Feed ist leer - Prüfen Sie die Debug-HTML Datei')
+    
+    # Zeige die gefundenen Artikel
+    print('\n📋 Gefundene Artikel im Feed:')
+    for href, title in list(unique_articles.items())[:10]:
+        print(f'  • {title}')
+
+except Exception as e:
+    print(f'❌ Kritischer Fehler: {e}')
+    import traceback
+    traceback.print_exc()
+    
+    # Erstelle minimalen Fallback-Feed
+    fg = FeedGenerator()
+    fg.title('Carnegie Россия-Евразия - Политика')
+    fg.description('Политические анализы (Fallback)')
+    fg.link(href=BASE_URL, rel='alternate')
+    fg.language('ru')
+    
+    # Fallback-Artikel
+    fallback_articles = [
+        ('Гренландия в центре внимания России и Китая', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat'),
+        ('Китай как глобальный поставщик безопасности', 'https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider')
     ]
     
-    for i, (title, href) in enumerate(sample_articles):
+    for title, href in fallback_articles:
         fe = fg.add_entry()
         fe.title(title)
         fe.link(href=href)
-        fe.description(f'Аналитическая публикация Carnegie: {title}')
-        # Verteile Veröffentlichungsdaten über die letzten 30 Tage
-        pub_date = datetime.now(pytz.utc) - timedelta(days=random.randint(0, 30))
-        fe.pubDate(pub_date)
-        print(f'Added dummy article: {title}')
+        fe.description(title)
+        fe.pubDate(datetime.now(pytz.utc))
     
     fg.rss_file('carnegie_feed.xml', pretty=True)
-    print('Fallback feed created')
-    exit(0)
-
-# Wenn wir die Seite erfolgreich geladen haben
-soup = BeautifulSoup(response.content, 'html.parser')
-
-# RSS Feed erstellen
-fg = FeedGenerator()
-fg.title('Carnegie Россия-Евразия - Publications')
-fg.description('Публикации Carnegie Россия-Евразия')
-fg.link(href=url, rel='alternate')
-fg.language('ru')
-
-print('Parsing page content...')
-
-# EXTREM EINFACHE METHODE: Suche nach Textblöcken die wie Artikel aussehen
-articles = []
-
-# Finde alle Textblöcke mit mehr als 30 Zeichen
-for element in soup.find_all(['div', 'article', 'section', 'li']):
-    text = element.get_text(strip=True)
-    
-    # Filter: Muss wie ein Artikel-Titel aussehen
-    if 30 < len(text) < 200:
-        # Suchen nach Links im Element
-        link = element.find('a', href=True)
-        if link:
-            href = link['href']
-            # Relative URLs korrigieren
-            if href.startswith('/'):
-                href = 'https://carnegieendowment.org' + href
-            
-            # Nur Carnegie-Links behalten
-            if 'carnegieendowment.org' in href:
-                articles.append((text, href))
-
-# Alternative: Suche nach allen Links mit langem Text
-if len(articles) < 3:
-    print('Trying link-based search...')
-    for link in soup.find_all('a', href=True):
-        text = link.get_text(strip=True)
-        href = link['href']
-        
-        if 25 < len(text) < 150:
-            if href.startswith('/'):
-                href = 'https://carnegieendowment.org' + href
-            
-            if 'carnegieendowment.org' in href and '/publication' in href:
-                articles.append((text, href))
-
-# Duplikate entfernen
-unique_articles = {}
-for title, href in articles:
-    if href not in unique_articles:
-        unique_articles[href] = title
-
-print(f'Found {len(unique_articles)} potential articles')
-
-# Falls immer noch nichts gefunden, Dummy-Artikel verwenden
-if len(unique_articles) == 0:
-    print('No articles found, using fallback...')
-    unique_articles = {
-        'https://carnegieendowment.org/russia-eurasia/publications': 'Carnegie Russia-Eurasia Publications',
-        'https://carnegieendowment.org/search?lang=ru&program=russia-eurasia': 'Поиск публикаций Carnegie Россия-Евразия',
-        'https://carnegieendowment.org/about': 'О Carnegie Endowment'
-    }
-
-# Füge Artikel zum Feed hinzu
-for i, (href, title) in enumerate(list(unique_articles.items())[:10]):
-    try:
-        fe = fg.add_entry()
-        fe.title(title)
-        fe.link(href=href)
-        fe.description(f'Публикация Carnegie: {title}')
-        # Veröffentlichungsdatum mit Abstand setzen
-        pub_date = datetime.now(pytz.utc) - timedelta(days=i)
-        fe.pubDate(pub_date)
-        print(f'Added to feed ({i+1}): {title[:50]}...')
-    except Exception as e:
-        print(f'Error adding article: {e}')
-
-# Feed speichern
-fg.rss_file('carnegie_feed.xml', pretty=True)
-print(f'RSS feed created with {len(fg.entry())} articles')
+    print('🔄 Fallback-Feed erstellt')
         "
 
     - name: Create index.html
       run: |
-        echo '<!DOCTYPE html>' > index.html
-        echo '<html>' >> index.html
-        echo '<head>' >> index.html
-        echo '<title>Carnegie RSS Feed</title>' >> index.html
-        echo '<meta charset="utf-8">' >> index.html
-        echo '</head>' >> index.html
-        echo '<body>' >> index.html
-        echo '<h1>📰 Carnegie Россия-Евразия RSS Feed</h1>' >> index.html
-        echo '<p><a href="carnegie_feed.xml">Subscribe to RSS Feed</a></p>' >> index.html
-        echo "<p>Last updated: $(date -u +'%Y-%m-%d %H:%M UTC')</p>" >> index.html
-        echo '<p>This feed automatically updates every 4 hours.</p>' >> index.html
-        echo '</body>' >> index.html
-        echo '</html>' >> index.html
+        current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
+        cat > index.html << 'EOF'
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Carnegie RSS Feed</title>
+            <meta charset="utf-8">
+        </head>
+        <body>
+            <h1>📰 Carnegie Россия-Евразия - Политика</h1>
+            <p><a href="carnegie_feed.xml">📡 RSS Feed abonnieren</a></p>
+            <p>Auto-updated every 4 hours</p>
+            <p>Updated: $current_date</p>
+        </body>
+        </html>
+        EOF
 
     - name: Commit and push
       run: |

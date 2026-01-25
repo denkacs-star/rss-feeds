@@ -136,7 +136,7 @@ def main():
     
     print(f"\n📊 {len(articles)} Artikel erfolgreich gescraped")
     
-    output_file = 'rss-feeds/carnegie_feed.xml'
+    output_file = 'carnegie_feed.xml'  # Statt 'rss-feeds/carnegie_feed.xml'
     generate_rss_feed(articles, output_file)
     
     print("\n✨ Fertig!")

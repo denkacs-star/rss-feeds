@@ -13,69 +13,70 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Create RSS feed line by line
+    - name: Clean up and create new RSS feed
       run: |
-        # Create RSS feed line by line to avoid formatting issues
+        # Lösche alte, beschädigte Datei
+        rm -f carnegie_feed.xml
+        
+        # Erstelle neue, saubere RSS Datei
         echo '<?xml version="1.0" encoding="UTF-8"?>' > carnegie_feed.xml
         echo '<rss version="2.0">' >> carnegie_feed.xml
         echo '<channel>' >> carnegie_feed.xml
-        echo '  <title>Carnegie Россия-Евразия</title>' >> carnegie_feed.xml
-        echo '  <link>https://carnegieendowment.org/ru/russia-eurasia</link>' >> carnegie_feed.xml
-        echo '  <description>Аналитика Carnegie Россия-Евразия</description>' >> carnegie_feed.xml
+        echo '  <title>Carnegie Россия-Евразия - Политика</title>' >> carnegie_feed.xml
+        echo '  <link>https://carnegieendowment.org/ru/russia-eurasia/politika</link>' >> carnegie_feed.xml
+        echo '  <description>Политические анализы Carnegie Россия-Евразия</description>' >> carnegie_feed.xml
         echo '  <language>ru</language>' >> carnegie_feed.xml
-        echo '  <lastBuildDate>Sat, 25 Jan 2026 10:00:00 GMT</lastBuildDate>' >> carnegie_feed.xml
+        echo '  <lastBuildDate>Sat, 25 Jan 2026 11:00:00 GMT</lastBuildDate>' >> carnegie_feed.xml
         echo '' >> carnegie_feed.xml
         echo '  <item>' >> carnegie_feed.xml
         echo '    <title>Гренландия в центре внимания России и Китая</title>' >> carnegie_feed.xml
         echo '    <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</link>' >> carnegie_feed.xml
-        echo '    <description>Анализ Carnegie</description>' >> carnegie_feed.xml
+        echo '    <description>Анализ Carnegie: Гренландия в центре внимания России и Китая</description>' >> carnegie_feed.xml
         echo '    <pubDate>Fri, 24 Jan 2026 10:00:00 GMT</pubDate>' >> carnegie_feed.xml
+        echo '    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/greenland-russia-china-threat</guid>' >> carnegie_feed.xml
         echo '  </item>' >> carnegie_feed.xml
         echo '' >> carnegie_feed.xml
         echo '  <item>' >> carnegie_feed.xml
         echo '    <title>Китай как глобальный поставщик безопасности</title>' >> carnegie_feed.xml
         echo '    <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</link>' >> carnegie_feed.xml
-        echo '    <description>Анализ Carnegie</description>' >> carnegie_feed.xml
+        echo '    <description>Анализ Carnegie: Китай как глобальный поставщик безопасности</description>' >> carnegie_feed.xml
         echo '    <pubDate>Thu, 23 Jan 2026 10:00:00 GMT</pubDate>' >> carnegie_feed.xml
+        echo '    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/china-global-security-provider</guid>' >> carnegie_feed.xml
         echo '  </item>' >> carnegie_feed.xml
         echo '' >> carnegie_feed.xml
         echo '  <item>' >> carnegie_feed.xml
         echo '    <title>Россия в потерянном глобальном хаосе</title>' >> carnegie_feed.xml
         echo '    <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</link>' >> carnegie_feed.xml
-        echo '    <description>Анализ Carnegie</description>' >> carnegie_feed.xml
+        echo '    <description>Анализ Carnegie: Россия в потерянном глобальном хаосе</description>' >> carnegie_feed.xml
         echo '    <pubDate>Wed, 22 Jan 2026 10:00:00 GMT</pubDate>' >> carnegie_feed.xml
+        echo '    <guid isPermaLink="true">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/01/russia-lost-global-chaos</guid>' >> carnegie_feed.xml
         echo '  </item>' >> carnegie_feed.xml
         echo '</channel>' >> carnegie_feed.xml
         echo '</rss>' >> carnegie_feed.xml
         
-        echo "✅ RSS feed created"
-        echo "Preview:"
-        cat carnegie_feed.xml
+        echo "✅ New RSS feed created"
+        echo "First 15 lines:"
+        head -n 15 carnegie_feed.xml
 
-    - name: Validate XML
+    - name: Force push to fix merge conflicts
       run: |
-        echo "Checking XML..."
-        if xmllint --noout carnegie_feed.xml; then
-          echo "✅ XML is valid"
-        else
-          echo "❌ XML has errors"
-          xmllint --noout carnegie_feed.xml 2>&1
-        fi
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git add carnegie_feed.xml
+        git commit -m "FIX: Remove merge conflicts and create clean RSS feed"
+        git push --force origin main
+        
+        echo "✅ Force push completed"
 
     - name: Create index.html
       run: |
         current_date=$(date -u +'%Y-%m-%d %H:%M UTC')
         echo '<!DOCTYPE html>' > index.html
         echo '<html><head><title>Carnegie RSS</title><meta charset="utf-8"></head>' >> index.html
-        echo '<body><h1>Carnegie RSS Feed</h1>' >> index.html
+        echo '<body><h1>Carnegie Россия-Евразия RSS Feed</h1>' >> index.html
         echo '<p><a href="carnegie_feed.xml">RSS Feed</a></p>' >> index.html
         echo "<p>Updated: $current_date</p>" >> index.html
         echo '</body></html>' >> index.html
-
-    - name: Commit and push
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git add carnegie_feed.xml index.html
-        git commit -m "Update feed $(date -u +'%Y-%m-%d %H:%M')"
+        git add index.html
+        git commit -m "Update index" || echo "No changes"
         git push

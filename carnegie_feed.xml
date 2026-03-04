@@ -7,14 +7,7 @@
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Python Playwright RSS Generator</generator>
     <language>ru</language>
-    <lastBuildDate>Wed, 04 Mar 2026 13:15:51 +0000</lastBuildDate>
-    <item>
-      <title>Мюнхенский пациент. К чему приведет конфликт в правящем тандеме Кыргызстана</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/kyrgyzstan-political-turmoil</link>
-      <description>Нынешний президент Кыргызстана вплотную приблизился к тому, что не удавалось ни одному из его предшественников, — к превращению страны в персоналистскую автократию.</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/kyrgyzstan-political-turmoil</guid>
-      <pubDate>Thu, 12 Feb 2026 00:00:00 +0000</pubDate>
-    </item>
+    <lastBuildDate>Wed, 04 Mar 2026 19:02:42 +0000</lastBuildDate>
     <item>
       <title>Эрозия админресурса. Как Кремль разрушает собственную избирательную машину</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/russia-internal-power-erosion</link>
@@ -100,46 +93,53 @@
       <pubDate>Tue, 03 Mar 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
-      <title>Жемчужина и горе. Что стало с Одессой и ее жителями за четыре года войны</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/ukraine-odessa-russia-bombing</link>
-      <description>Жемчужина и горе. Что стало с Одессой и ее жителями за четыре года войны</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/ukraine-odessa-russia-bombing</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <title>На пути в сателлиты. Как война изменит отношения России и Ирана</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/iran-russia-after-khamenei</link>
+      <description>После войны у оставшегося в изоляции иранского режима будет не так много альтернатив, кроме как обратиться за поддержой к России. A у Москвы есть большой опыт помощи «дружественным государствам» в обмен на часть их суверенитета, как это было, например, с Сирией при Башаре Асаде.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/iran-russia-after-khamenei</guid>
+      <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
       <title>Потеря уникальности. Почему США интересуются Кавказом, но не Грузией</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/georgia-usa-no-deals</link>
       <description>Потеря уникальности. Почему США интересуются Кавказом, но не Грузией</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/georgia-usa-no-deals</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <pubDate>Wed, 04 Mar 2026 19:02:42 +0000</pubDate>
     </item>
     <item>
       <title>Поставки перед войной. Поможет ли российское оружие Ирану</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/russia-iran-military-support</link>
       <description>Поставки перед войной. Поможет ли российское оружие Ирану</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/russia-iran-military-support</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <pubDate>Wed, 04 Mar 2026 19:02:42 +0000</pubDate>
     </item>
     <item>
       <title>Заметки из Киева. Как Украина готовится к выборам</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/ukraine-elections-preparation</link>
       <description>Заметки из Киева. Как Украина готовится к выборам</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/02/ukraine-elections-preparation</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <pubDate>Wed, 04 Mar 2026 19:02:41 +0000</pubDate>
     </item>
     <item>
       <title>Сыграл в ящик Пандоры. Как Кремль воспринимает войну в Иране</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/russia-iran-khamenei-death</link>
       <description>Сыграл в ящик Пандоры. Как Кремль воспринимает войну в Иране</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/russia-iran-khamenei-death</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <pubDate>Wed, 04 Mar 2026 19:02:41 +0000</pubDate>
     </item>
     <item>
       <title>Китай без нефти. Как интервенции Трампа усиливают позиции России</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/us-china-russia-iran-oil</link>
-      <description>Интервенции США в Иране и Венесуэле вписываются в американскую стратегию сдерживания Китая, но также усиливают позиции России.</description>
+      <description>Китай без нефти. Как интервенции Трампа усиливают позиции России</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/us-china-russia-iran-oil</guid>
-      <pubDate>Wed, 04 Mar 2026 13:15:51 +0000</pubDate>
+      <pubDate>Wed, 04 Mar 2026 19:02:41 +0000</pubDate>
+    </item>
+    <item>
+      <title>На пути в сателлиты. Как война изменит отношения России и Ирана</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/iran-russia-after-khamenei</link>
+      <description>После войны у оставшегося в изоляции иранского режима будет не так много альтернатив, кроме как обратиться за поддержой к России. A у Москвы есть большой опыт помощи «дружественным государствам» в обмен на часть их суверенитета, как это было, например, с Сирией при Башаре Асаде.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/03/iran-russia-after-khamenei</guid>
+      <pubDate>Wed, 04 Mar 2026 19:02:41 +0000</pubDate>
     </item>
   </channel>
 </rss>

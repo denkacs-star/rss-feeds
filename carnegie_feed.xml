@@ -7,14 +7,7 @@
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Python Playwright RSS Generator</generator>
     <language>ru</language>
-    <lastBuildDate>Thu, 08 Oct 2026 05:46:54 +0000</lastBuildDate>
-    <item>
-      <title>Подсчет по авариям. Как измерить российский топливный кризис с помощью ДТП</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-oil-crisis-signs</link>
-      <description>При значительном дефиците предложения бензина единственный механизм, приводящий рынок в равновесие, — это разрушение спроса и уменьшение автомобильного трафика. То есть масштабы снижения российской нефтепереработки можно оценить на основе того, насколько меньше россияне стали ездить на автомобилях.</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-oil-crisis-signs</guid>
-      <pubDate>Wed, 16 Sep 2026 00:00:00 +0000</pubDate>
-    </item>
+    <lastBuildDate>Thu, 08 Oct 2026 13:16:06 +0000</lastBuildDate>
     <item>
       <title>Лишний фронтмен. Как Путин и «Единая Россия» мешают друг другу агитировать</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-putin-united-russia-trouble</link>
@@ -100,46 +93,53 @@
       <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
-      <title>Тающий актив. Как Россия может использовать рост перевозок по Севморпути</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-northern-sea-route</link>
-      <description>Тающий актив. Как Россия может использовать рост перевозок по Севморпути</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-northern-sea-route</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
-    </item>
-    <item>
-      <title>Взаимовыгодный хаос. Что выиграет Россия от подъема крайне правых в Европе</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/europe-right-wing-russia-help</link>
-      <description>Взаимовыгодный хаос. Что выиграет Россия от подъема крайне правых в Европе</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/europe-right-wing-russia-help</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
+      <title>Нужные люди. По каким принципам подбирали людей в новую Госдуму</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</link>
+      <description>Спикер, вице-спикеры и главы основных комитетов работают на своих должностях не первый срок и давно превратились из парламентариев в аппаратчиков. Меняют их лишь вслед за перестановками в исполнительной власти, когда лоббист старой команды становится неактуален и его место занимает более удобный контрагент.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</guid>
+      <pubDate>Thu, 08 Oct 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
       <title>Пир в тупике. Куда повернули отношения США и КНР после саммита Трампа и Си</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/usa-china-visit-meaning</link>
       <description>Пир в тупике. Куда повернули отношения США и КНР после саммита Трампа и Си</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/usa-china-visit-meaning</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
     </item>
     <item>
       <title>Пушки без масла. Кто заплатит за войну в 2027 году</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-budget-war-overview</link>
       <description>Пушки без масла. Кто заплатит за войну в 2027 году</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/russia-budget-war-overview</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
     </item>
     <item>
       <title>Обучая пустоту. Как Россия изменила систему образования в захваченной части Украины</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/ukraine-schools-russia-occupation</link>
       <description>Обучая пустоту. Как Россия изменила систему образования в захваченной части Украины</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/09/ukraine-schools-russia-occupation</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
     </item>
     <item>
       <title>Туркменистан выдержит двоих. Как идет борьба за власть отца и сына Бердымухамедовых</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/turkmenistan-father-son-power</link>
-      <description>Судя по тому, что Гурбангулы не оставляет попыток сохранить влияние, ему непросто смириться с тем, что сын-президент все больше обходится без него.</description>
+      <description>Туркменистан выдержит двоих. Как идет борьба за власть отца и сына Бердымухамедовых</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/turkmenistan-father-son-power</guid>
-      <pubDate>Thu, 08 Oct 2026 05:46:54 +0000</pubDate>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
+    </item>
+    <item>
+      <title>ИИ-пропаганда. Как Россия влияет на ответы западных нейросетей</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-AI-political-influence</link>
+      <description>ИИ-пропаганда. Как Россия влияет на ответы западных нейросетей</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-AI-political-influence</guid>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
+    </item>
+    <item>
+      <title>Нужные люди. По каким принципам подбирали людей в новую Госдуму</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</link>
+      <description>Спикер, вице-спикеры и главы основных комитетов работают на своих должностях не первый срок и давно превратились из парламентариев в аппаратчиков. Меняют их лишь вслед за перестановками в исполнительной власти, когда лоббист старой команды становится неактуален и его место занимает более удобный контрагент.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</guid>
+      <pubDate>Thu, 08 Oct 2026 13:16:06 +0000</pubDate>
     </item>
   </channel>
 </rss>

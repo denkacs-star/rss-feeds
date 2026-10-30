@@ -7,28 +7,7 @@
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Python Playwright RSS Generator</generator>
     <language>ru</language>
-    <lastBuildDate>Fri, 30 Oct 2026 05:30:08 +0000</lastBuildDate>
-    <item>
-      <title>ИИ-пропаганда. Как Россия влияет на ответы западных нейросетей</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-AI-political-influence</link>
-      <description>На руку кремлевской ИИ-пропаганде играет то, как раздробленно, хаотично и временами алогично она работает. Если одна из задач — подорвать доверие к достоверной информации, противоречивость сообщений не обязательно мешает.</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-AI-political-influence</guid>
-      <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>Нужные люди. По каким принципам подбирали людей в новую Госдуму</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</link>
-      <description>Спикер, вице-спикеры и главы основных комитетов работают на своих должностях не первый срок и давно превратились из парламентариев в аппаратчиков. Меняют их лишь вслед за перестановками в исполнительной власти, когда лоббист старой команды становится неактуален и его место занимает более удобный контрагент.</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-new-parliament-people</guid>
-      <pubDate>Thu, 08 Oct 2026 00:00:00 +0000</pubDate>
-    </item>
-    <item>
-      <title>Лицом к стене. Иван Толстой об эмиграции Ходасевича</title>
-      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-migrant-literature-khodasevich</link>
-      <description>Им все больше овладевало разочарование и отчаяние. Он осознавал, что эмиграция сама по себе — ущербность, что при всем ужасе советской жизни «истинная» биография художника возможна только в России, а существование эмигранта выморочно.</description>
-      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-migrant-literature-khodasevich</guid>
-      <pubDate>Fri, 09 Oct 2026 00:00:00 +0000</pubDate>
-    </item>
+    <lastBuildDate>Fri, 30 Oct 2026 12:39:05 +0000</lastBuildDate>
     <item>
       <title>Обелить существующее. Как дизельная сделка с Трампом скажется на России и мировом рынке</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-usa-diesel-agreement</link>
@@ -107,46 +86,53 @@
       <pubDate>Tue, 27 Oct 2026 00:00:00 +0000</pubDate>
     </item>
     <item>
+      <title>Схождение в Аид. Иван Толстой о двух возвращениях Василия Шульгина в Россию</title>
+      <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-ussr-shulgin-comeback</link>
+      <description>Манипулировать шульгинскими текстами советской власти было не впервой. Начиналась манипуляция Шульгиным полустолетием раньше.</description>
+      <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-ussr-shulgin-comeback</guid>
+      <pubDate>Fri, 30 Oct 2026 00:00:00 +0000</pubDate>
+    </item>
+    <item>
       <title>Эрозия государства. О чем говорят поствыборные перестановки в правительстве</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-post-election-reshuffles</link>
       <description>Эрозия государства. О чем говорят поствыборные перестановки в правительстве</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-post-election-reshuffles</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
     <item>
       <title>Церковь, розыск, СВР. Что показал арест Рыбаря в Черногории</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-europe-military-blogger-detained</link>
       <description>Церковь, розыск, СВР. Что показал арест Рыбаря в Черногории</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-europe-military-blogger-detained</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
     <item>
       <title>Наши мертвые нас не оставят в беде. Как война меняет литературные вкусы российского общества</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-war-literature-tastes</link>
       <description>Наши мертвые нас не оставят в беде. Как война меняет литературные вкусы российского общества</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-war-literature-tastes</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
     <item>
       <title>Красноморский мираж. Почему Россия так и не смогла открыть военную базу в Судане</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-sudan-military-base</link>
       <description>Красноморский мираж. Почему Россия так и не смогла открыть военную базу в Судане</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/russia-sudan-military-base</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
     <item>
       <title>Горизонталь власти. Почему итог выборов в Сербии — это больше, чем поражение Вучича</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/serbia-election-results-meaning</link>
       <description>Горизонталь власти. Почему итог выборов в Сербии — это больше, чем поражение Вучича</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/serbia-election-results-meaning</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
     <item>
       <title>Боеголовки на границе. Появится ли в странах Балтии ядерное оружие</title>
       <link>https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/baltics-nuclear-weapon-deployment</link>
       <description>Страны Балтии уже стали рассматривать временное присутствие ядерного оружия в случае кризиса или войны как вероятный сценарий. А значит, и дальнейшая эскалация с размещением в перспективе ядерных арсеналов союзников получает ненулевые шансы на то, чтобы осуществиться.</description>
       <guid isPermaLink="false">https://carnegieendowment.org/ru/russia-eurasia/politika/2026/10/baltics-nuclear-weapon-deployment</guid>
-      <pubDate>Fri, 30 Oct 2026 05:30:08 +0000</pubDate>
+      <pubDate>Fri, 30 Oct 2026 12:39:05 +0000</pubDate>
     </item>
   </channel>
 </rss>
